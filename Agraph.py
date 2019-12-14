@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import ttk
-
+from tkinter.filedialog import askopenfilename
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -18,25 +18,103 @@ dataThree = os.path.join(dirname, 'codeminer.gexf')
 bgCol = "#392239"
 fgCol = "#ac93ac"
 
+#Global variables
+fArray = [] #Array for figures
+fI = 0 #counter for keeping track of current graph
+#Global arguments
+global toolbar
+toolbar = None
+global globalLayout
+globalLayout = "0" #0 = kamada, 1 = circular, 2 = spectral, 3 = shell
+global globalData
+globalData = "path"
+global globalImport
+globalImport = dataOne
+global globalColMet
+globalColMet = 0 #metrics to be defined, but same principle as globalLayout
+global globalColset
+globalColset = "colorset"
+global globalSizeMet
+globalSizeMet = 0 #idem
+global globalSize
+globalSize = 10
+global globalFilter
+globalFilter = 0 #idem
+global globalFilterThreshold
+globalFilterThreshold = 0
+global f
+f = 0 #plot
 
-#Testing networkx and importing test file
-# f = plt.Figure(figsize = (5,4), facecolor = bgCol)
-# a = f.add_subplot(111)
-# a.set_facecolor(fgCol)
-# path1 = 'c:/users/lucien/desktop/network_visualization/data/LesMiserables.gexf'
-# G = nx.read_gexf(dataOne)
-# pos = nx.circular_layout(G)
-# nx.draw_networkx(G, pos = pos, ax = a, with_labels=False)
-# xlim = a.get_xlim()
-# ylim = a.get_ylim()
-# plt.axis('off')
-# a.set_title('Circular Layout', fontsize = 30, color = "white")
+# Testing networkx and importing test file
+f = plt.Figure(figsize = (5,4), facecolor = bgCol)
+a = f.add_subplot(111)
+a.set_facecolor(fgCol)
+path1 = dataOne
+G = nx.read_gexf(dataOne)
+pos = nx.circular_layout(G)
+nx.draw_networkx(G, pos = pos, ax = a, with_labels=False)
+xlim = a.get_xlim()
+ylim = a.get_ylim()
+plt.axis('off')
+a.set_title('Circular Layout', fontsize = 30, color = "white")
+
+
+#import
+def openFile():
+    global globalImport
+    globalImport = askopenfilename(parent = window)
+    print(globalImport)
+
+
+#Refresh
+def refreshGlobals():
+    global globalLayout
+    #update values of the global variables and parameters
+    globalLayout = radioVar.get()
+    globalData = optionsCombo1.get()
+    globalImport = "path" #todo
+    globalColMet = 0  #todo
+    globalColset = "colorset" #todo
+    globalSizeMet = 0  # idem #todo
+    globalSize = 10 #todo
+    globalFilter = 0  # todo
+    globalFilterThreshold = 0 #todo
+    #print(globalData) #Can use this line to print on console the variable you want
+
+def refreshPlot():
+    #refreshing all parameters
+    refreshGlobals()
+    global canvasWidget
+    canvasWidget.destroy()
+    global f
+    f = 0
+    arg = globalLayout
+    print("arg = ", arg)
+    if (arg == "0"):
+        f = drawKamada(globalImport, "Kamada", "white", 30, False)
+    if (arg == "1"):
+        f = drawCircular(globalImport, "Circular", "white", 30, False)
+    if (arg == "2"):
+        f = drawSpectral(globalImport, "Spectral", "white", 30, False)
+    if (arg == "3"):
+        f = drawShell(globalImport, "Shell", "white", 30, False)
+    canvas = FigureCanvasTkAgg(f, frame)
+    canvas.draw()
+    canvasWidget = canvas.get_tk_widget()
+    canvasWidget.grid(row=2, column=1, columnspan=16, rowspan=12, sticky=N + S + W + E)
+
+    global toolbar
+    toolbar.destroy()
+    toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
+
+
 
 ################
 #Plot functions
 ################
 #Circular
 def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
@@ -51,6 +129,7 @@ def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30
 
 #Kamada
 def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
@@ -65,6 +144,7 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
 
 #Spectral
 def drawSpectral(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
@@ -79,6 +159,7 @@ def drawSpectral(dataPath, titleString = "Title", color = "white", fontSize = 30
 
 #Shell
 def drawShell(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
@@ -90,6 +171,7 @@ def drawShell(dataPath, titleString = "Title", color = "white", fontSize = 30, l
     plt.axis('off')
     a.set_title(titleString, fontsize = fontSize, color = color)
     return f
+
 
 fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 
@@ -110,9 +192,9 @@ toolbarFrame = Frame(master = window)
 
 
 #Radiochoice (exclusive choice)
-radioVals = ["1","2","3","4"]
+radioVals = ["0","1","2","3"]
 radioText = ["Kamada", "Circular", "Spectral", "Shell"]
-radioVar = StringVar()
+radioVar = StringVar(window)
 radioVar.set(radioVals[0])
 kamada = Radiobutton(frame, variable = radioVar, text = radioText[0], value = radioVals[0], bg = bgCol, fg = fgCol, font = "Courrier")
 circular = Radiobutton(frame, variable = radioVar, text = radioText[1], value = radioVals[1], bg = bgCol, font = "Courrier",fg = fgCol)
@@ -127,8 +209,8 @@ buttonWidth = 11
         
 
 #Buttons
-refreshButt = Button(frame, text = "Refresh",bg = fgCol, fg =bgCol,font = "Courrier, 20")   
-loadButt = Button(frame, text = "Import",bg = fgCol, fg =bgCol,font = "Courrier, 20")
+refreshButt = Button(frame, text = "Refresh",bg = fgCol, fg =bgCol,font = "Courrier, 20", command=refreshPlot)
+loadButt = Button(frame, text = "Import",bg = fgCol, fg =bgCol,font = "Courrier, 20", command = openFile)
 exitButton = Button(frame, text = "Exit", bg = fgCol, fg = bgCol, font = "Courrier, 20")
 nextButton = Button(frame, text = "Next", bg = fgCol, fg = bgCol, font = "Courrier, 20")
 prevButton = Button(frame, text = "Previous", bg = fgCol, fg = bgCol, font = "Courrier, 20")
@@ -147,43 +229,43 @@ layoutLabel = Label(frame, text = "Layout : ",fg = fgCol, bg =bgCol,font = "Cour
 
 #text entries
 sizeEntry  = Entry(frame)
-sizeInput = IntVar()
+sizeInput = IntVar(window)
 sizeInput.set(10)
 filterEntry = Entry(frame)
-filterInput = DoubleVar()
+filterInput = DoubleVar(window)
 filterInput.set(5)
 
 #deroulantes
 optionData = ("Data1", "Data2", "Data3")
-optionDataVar = StringVar()
+optionDataVar = StringVar(window)
 optionDataVar.set(optionData[0])
 optionsDataMenu = OptionMenu(frame, optionDataVar, *optionData)
 optionsCombo1 = ttk.Combobox(frame, values = optionData)
 optionsCombo1.current(0)
 
 optionMetrics2 = ("met1", "met2", "met3")
-optionMetricsVar2 = StringVar()
+optionMetricsVar2 = StringVar(window)
 optionMetricsVar2.set(optionMetrics2[0])
 optionsDataMenu2 = OptionMenu(frame, optionMetricsVar2, *optionMetrics2)
 optionsCombo2 = ttk.Combobox(frame, values = optionMetrics2)
 optionsCombo2.current(0)
 
 optionMetrics3 = ("met1", "met2", "met3")
-optionMetricsVar3 = StringVar()
+optionMetricsVar3 = StringVar(window)
 optionMetricsVar3.set(optionMetrics3[0])
 optionsDataMenu3 = OptionMenu(frame, optionMetricsVar3, *optionMetrics3)
 optionsCombo3 = ttk.Combobox(frame, values = optionMetrics3)
 optionsCombo3.current(0)
 
 optionMetrics4 = ("met1", "met2", "met3")
-optionMetricsVar4 = StringVar()
+optionMetricsVar4 = StringVar(window)
 optionMetricsVar4.set(optionMetrics4[0])
 optionsDataMenu4 = OptionMenu(frame, optionMetricsVar4, *optionMetrics4)
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 
 optionMetrics5 = ("colset1", "colset2", "colset3")
-optionMetricsVar5 = StringVar()
+optionMetricsVar5 = StringVar(window)
 optionMetricsVar5.set(optionMetrics4[0])
 optionsDataMenu5 = OptionMenu(frame, optionMetricsVar5, *optionMetrics5)
 optionsCombo5 = ttk.Combobox(frame, values = optionMetrics5)
@@ -196,8 +278,9 @@ optionsCombo5.current(0)
 # canvas.get_tk_widget().grid(column = 2, row = 1, columnspan = 12, rowspan = 8)
 # 
 # =============================================================================
-canvas = FigureCanvasTkAgg(fCirc, frame)
+canvas = FigureCanvasTkAgg(f, frame)
 canvas.draw()
+canvasWidget = canvas.get_tk_widget()
 
 #GridSpacing
 for i in range(0,21):
@@ -228,16 +311,12 @@ filterEntry.grid(column = 19, row = 11, columnspan = 3, sticky = N + S + W + E)
 prevButton.grid(column = 15, row = 14, columnspan = 2, sticky = N + S + W + E)
 nextButton.grid(column = 17, row = 14, columnspan = 2, sticky = N + S + W + E)
 layoutLabel.grid(column = 0, row = 0, columnspan = 1, sticky = N + S + W + E)
-canvas.get_tk_widget().grid(row=2, column=1, columnspan = 16, rowspan = 12,sticky = N + S + W + E)
+canvasWidget.grid(row=2, column=1, columnspan = 16, rowspan = 12,sticky = N + S + W + E)
 canvas.draw()
 #toolbar
 toolbarFrame.grid(column = 0, row = 14, columnspan = 10)
 toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
 
-
-
-
-
-
+print(radioVar)
 
 window.mainloop()
