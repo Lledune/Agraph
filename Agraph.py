@@ -1,33 +1,97 @@
 from tkinter import *
-from tkinter import filedialog
 from tkinter import ttk
-import numpy as np
-import pandas as pd
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
-import community
 mpl.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+import os
 
+#paths names
+dirname = os.path.dirname(__file__)
+dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
+dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
+dataThree = os.path.join(dirname, 'codeminer.gexf')
 
+#Color settings
 bgCol = "#392239"
 fgCol = "#ac93ac"
+
+
 #Testing networkx and importing test file
-f = plt.Figure(figsize = (5,4), facecolor = bgCol)
-a = f.add_subplot(111)
-a.set_facecolor(fgCol)
+# f = plt.Figure(figsize = (5,4), facecolor = bgCol)
+# a = f.add_subplot(111)
+# a.set_facecolor(fgCol)
+# path1 = 'c:/users/lucien/desktop/network_visualization/data/LesMiserables.gexf'
+# G = nx.read_gexf(dataOne)
+# pos = nx.circular_layout(G)
+# nx.draw_networkx(G, pos = pos, ax = a, with_labels=False)
+# xlim = a.get_xlim()
+# ylim = a.get_ylim()
+# plt.axis('off')
+# a.set_title('Circular Layout', fontsize = 30, color = "white")
 
+################
+#Plot functions
+################
+#Circular
+def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    f = plt.Figure(figsize=(5,4), facecolor=bgCol)
+    a = f.add_subplot(111)
+    a.set_facecolor(fgCol)
+    G = nx.read_gexf(dataPath)
+    pos = nx.circular_layout(G)
+    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize = fontSize, color = color)
+    return f
 
-path = 'c:/users/lucien/desktop/network_visualization/data/LesMiserables.gexf'
-G = nx.read_gexf(path)
-pos = nx.circular_layout(G)
-nx.draw_networkx(G, pos = pos, ax = a, with_labels=False)
-xlim = a.get_xlim()
-ylim = a.get_ylim()
-plt.axis('off')
-a.set_title('Circular Layout', fontsize = 30, color = "white")
+#Kamada
+def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    f = plt.Figure(figsize=(5,4), facecolor=bgCol)
+    a = f.add_subplot(111)
+    a.set_facecolor(fgCol)
+    G = nx.read_gexf(dataPath)
+    pos = nx.kamada_kawai_layout(G)
+    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize = fontSize, color = color)
+    return f
 
+#Spectral
+def drawSpectral(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    f = plt.Figure(figsize=(5,4), facecolor=bgCol)
+    a = f.add_subplot(111)
+    a.set_facecolor(fgCol)
+    G = nx.read_gexf(dataPath)
+    pos = nx.spectral_layout(G)
+    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize = fontSize, color = color)
+    return f
+
+#Shell
+def drawShell(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+    f = plt.Figure(figsize=(5,4), facecolor=bgCol)
+    a = f.add_subplot(111)
+    a.set_facecolor(fgCol)
+    G = nx.read_gexf(dataPath)
+    pos = nx.shell_layout(G)
+    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize = fontSize, color = color)
+    return f
+
+fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 
 #afficher la fenêtre principale
 window = Tk()
@@ -132,7 +196,7 @@ optionsCombo5.current(0)
 # canvas.get_tk_widget().grid(column = 2, row = 1, columnspan = 12, rowspan = 8)
 # 
 # =============================================================================
-canvas = FigureCanvasTkAgg(f, frame)
+canvas = FigureCanvasTkAgg(fCirc, frame)
 canvas.draw()
 
 #GridSpacing
