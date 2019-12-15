@@ -13,6 +13,11 @@ dirname = os.path.dirname(__file__)
 dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
 dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
 dataThree = os.path.join(dirname, 'codeminer.gexf')
+dirDic = {
+    "Les miserables" : dataOne,
+    "Airlines" : dataTwo,
+    "Code-miner" : dataThree
+}
 
 #Color settings
 bgCol = "#392239"
@@ -26,30 +31,46 @@ global toolbar
 toolbar = None
 global globalLayout
 globalLayout = "0" #0 = kamada, 1 = circular, 2 = spectral, 3 = shell
+
 global globalData
 globalData = "path"
+
 global globalImport
-globalImport = dataOne
+globalImport = dirDic["Les miserables"]
+
 global globalColMet
 globalColMet = 0 #metrics to be defined, but same principle as globalLayout
+
 global globalColset
 globalColset = "colorset"
+
 global globalSizeMet
 globalSizeMet = 0 #idem
+
 global globalSize
 globalSize = 10
+
 global globalFilter
 globalFilter = 0 #idem
+
 global globalFilterThreshold
 globalFilterThreshold = 0
+
 global f
 f = 0 #plot
+
+global checkedImport
+checkedImport = False
+
+global globalImported
+globalImported = "path"
+
 
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
 a.set_facecolor(fgCol)
-path1 = dataOne
+path = dataOne
 G = nx.read_gexf(dataOne)
 pos = nx.circular_layout(G)
 nx.draw_networkx(G, pos = pos, ax = a, with_labels=False)
@@ -63,31 +84,46 @@ a.set_title('Circular Layout', fontsize = 30, color = "white")
 #####################
 #Import
 def openFile():
-    global globalImport
-    globalImport = askopenfilename(parent = window)
-    print(globalImport)
+    global globalImported
+    globalImported = askopenfilename(parent = window)
+    print(globalImported)
 
 #Refresh global variables (take widget values)
 def refreshGlobals():
+
     global globalLayout
-    #update values of the global variables and parameters
     globalLayout = radioVar.get()
+
     global globalData
     globalData = optionsCombo1.get()
+
     global globalImport
-    globalImport = "path" #todo
+    global checkedImport
+    checkedImport = useImportChecked.get()
+    print("checked : ", checkedImport)
+    if(checkedImport == False):
+        globalImport = dirDic[optionsCombo1.get()]
+    if(checkedImport == True):
+        globalImport = globalImported
+
     global globalColMet
     globalColMet = 0  #todo
+
     global globalColset
     globalColset = "colorset" #todo
+
     global globalSizeMet
     globalSizeMet = 0  # idem #todo
+
     global globalSize
     globalSize = 10 #todo
+
     global globalFilter
     globalFilter = 0  # todo
+
     global globalFilterThreshold
     globalFilterThreshold = 0 #todo
+
     #print(globalData) #Can use this line to print on console the variable you want
 
 
@@ -103,7 +139,6 @@ def refreshPlot():
     global f
     f = 0
     arg = globalLayout
-    print("arg = ", arg)
     if (arg == "0"):
         f = drawKamada(globalImport, "Kamada", "white", 30, False)
     if (arg == "1"):
@@ -246,6 +281,11 @@ sizeLabel = Label(frame, text = "Size",fg = fgCol, bg =bgCol,font = "Courrier, 2
 filterLabel = Label(frame, text = "Filter",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 layoutLabel = Label(frame, text = "Layout : ",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 
+#Checkbutton
+global useImportChecked
+useImportChecked = BooleanVar(window)
+useImportCheck = Checkbutton(frame, text = "Use import ", variable = useImportChecked, background = bgCol, fg = fgCol, activebackground = bgCol, onvalue = True)
+
 #text entries
 sizeEntry  = Entry(frame)
 sizeInput = IntVar(window)
@@ -255,7 +295,7 @@ filterInput = DoubleVar(window)
 filterInput.set(5)
 
 #deroulantes
-optionData = ("Data1", "Data2", "Data3")
+optionData = ("Les miserables", "Airlines", "Code-miner")
 optionDataVar = StringVar(window)
 optionDataVar.set(optionData[0])
 optionsDataMenu = OptionMenu(frame, optionDataVar, *optionData)
@@ -319,6 +359,7 @@ circular.grid(column = 4, row = 0, columnspan = 3, sticky = N + S + W + E)
 spectral.grid(column = 7, row = 0, columnspan = 3, sticky = N + S + W + E)
 shell.grid(column = 10, row = 0, columnspan = 3, sticky = N + S + W + E)
 optionsCombo1.grid(column = 14, row = 0, columnspan = 4, sticky = N + S + W + E)
+useImportCheck.grid(column = 16, row = 1, columnspan = 2)
 refreshButt.grid(column = 19, row = 0, columnspan = 3, sticky = N + S + W + E)
 loadButt.grid(column = 19, row = 1, columnspan = 3, sticky = N + S + W + E)
 colorLabel.grid(column = 19, row = 3, columnspan = 3, sticky = N + S + W + E)
