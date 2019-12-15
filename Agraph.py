@@ -58,29 +58,43 @@ ylim = a.get_ylim()
 plt.axis('off')
 a.set_title('Circular Layout', fontsize = 30, color = "white")
 
-
-#import
+#####################
+#Utility functions
+#####################
+#Import
 def openFile():
     global globalImport
     globalImport = askopenfilename(parent = window)
     print(globalImport)
 
-
-#Refresh
+#Refresh global variables (take widget values)
 def refreshGlobals():
     global globalLayout
     #update values of the global variables and parameters
     globalLayout = radioVar.get()
+    global globalData
     globalData = optionsCombo1.get()
+    global globalImport
     globalImport = "path" #todo
+    global globalColMet
     globalColMet = 0  #todo
+    global globalColset
     globalColset = "colorset" #todo
+    global globalSizeMet
     globalSizeMet = 0  # idem #todo
+    global globalSize
     globalSize = 10 #todo
+    global globalFilter
     globalFilter = 0  # todo
+    global globalFilterThreshold
     globalFilterThreshold = 0 #todo
     #print(globalData) #Can use this line to print on console the variable you want
 
+
+################
+#Plot functions
+################
+#Main refresh
 def refreshPlot():
     #refreshing all parameters
     refreshGlobals()
@@ -107,11 +121,8 @@ def refreshPlot():
     toolbar.destroy()
     toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
 
-
-
-################
-#Plot functions
-################
+###########################################################################
+#The 4 functions below return f, a Figure that is then drawn on the canvas.
 #Circular
 def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
     global f
@@ -173,23 +184,31 @@ def drawShell(dataPath, titleString = "Title", color = "white", fontSize = 30, l
     return f
 
 
+#Default graph to be displayed
 fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 
-#afficher la fenêtre principale
+
+#####################
+#Main window config #
+#####################
+
+#Show main window
 window = Tk()
 window.title("A-graph")
 window.geometry("1124x780")
 window.minsize(1024, 720)
 window.resizable(width=False, height=False)
-#background color
 
+#background color
 window.config(background = bgCol)
 
+#################
+#Widgets
+#################
 
 #frame
 frame = Frame(window, bg = bgCol, bd = 1, relief = SUNKEN)
 toolbarFrame = Frame(master = window)
-
 
 #Radiochoice (exclusive choice)
 radioVals = ["0","1","2","3"]
@@ -282,15 +301,18 @@ canvas = FigureCanvasTkAgg(f, frame)
 canvas.draw()
 canvasWidget = canvas.get_tk_widget()
 
+##############
 #GridSpacing
+##############
 for i in range(0,21):
     frame.grid_columnconfigure(i, minsize = 49)
 frame.grid_columnconfigure(13, minsize = 0)
     
 for i in range(0,15):
     frame.grid_rowconfigure(i, minsize = 51)
-
-#Gridlayout 
+#########################
+#Gridlayout  Configure
+#########################
 frame.grid(column = 0, row = 0, columnspan = 21, rowspan = 15, sticky = N + S + W + E)
 kamada.grid(column = 1, row = 0, columnspan = 3, sticky = N + S + W + E)
 circular.grid(column = 4, row = 0, columnspan = 3, sticky = N + S + W + E)
