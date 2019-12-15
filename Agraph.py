@@ -1,6 +1,7 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -12,7 +13,7 @@ import os
 dirname = os.path.dirname(__file__)
 dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
 dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
-dataThree = os.path.join(dirname, 'codeminer.gexf')
+dataThree = os.path.join(dirname, 'data/codeminer.gexf')
 dirDic = {
     "Les miserables" : dataOne,
     "Airlines" : dataTwo,
@@ -24,8 +25,15 @@ bgCol = "#392239"
 fgCol = "#ac93ac"
 
 #Global variables
+global fArray
 fArray = [] #Array for figures
+
+global fI
 fI = 0 #counter for keeping track of current graph
+
+global fCount
+fCount = 0
+
 #Global arguments
 global toolbar
 toolbar = None
@@ -77,7 +85,9 @@ nx.draw_networkx(G, pos = pos, ax = a, with_labels=False)
 xlim = a.get_xlim()
 ylim = a.get_ylim()
 plt.axis('off')
-a.set_title('Circular Layout', fontsize = 30, color = "white")
+a.set_title('Circular', fontsize = 30, color = "white")
+fCount = fCount + 1
+fArray.append(f)
 
 #####################
 #Utility functions
@@ -132,6 +142,12 @@ def refreshGlobals():
 ################
 #Main refresh
 def refreshPlot():
+    #counter
+    global fCount
+    fCount = fCount + 1
+    global fI
+    fI = fCount - 1
+
     #refreshing all parameters
     refreshGlobals()
     global canvasWidget
@@ -147,14 +163,64 @@ def refreshPlot():
         f = drawSpectral(globalImport, "Spectral", "white", 30, False)
     if (arg == "3"):
         f = drawShell(globalImport, "Shell", "white", 30, False)
+
+    #storing graph
+    global fArray
+    fArray.append(f)
+
     canvas = FigureCanvasTkAgg(f, frame)
     canvas.draw()
     canvasWidget = canvas.get_tk_widget()
     canvasWidget.grid(row=2, column=1, columnspan=16, rowspan=12, sticky=N + S + W + E)
-
     global toolbar
     toolbar.destroy()
     toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
+
+def prevRefresh():
+    global fI
+    print(fI)
+    if(fI >= 1):
+        #Destroying canvas
+        global canvasWidget
+        canvasWidget.destroy()
+        #Getting f prev graph
+        global f
+        f = fArray[fI - 1]
+        #Changing canvas and toolbar
+        canvas = FigureCanvasTkAgg(f, frame)
+        canvas.draw()
+        canvasWidget = canvas.get_tk_widget()
+        canvasWidget.grid(row=2, column=1, columnspan=16, rowspan=12, sticky=N + S + W + E)
+        global toolbar
+        toolbar.destroy()
+        toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
+        fI = fI - 1
+    else:
+        messagebox.showerror(title="Agraph", message="There is no previous graph.")
+
+def nextRefresh():
+    global fI
+    global fCount
+    print(fI)
+    if(fI < fCount-1):
+        #Destroying canvas
+        global canvasWidget
+        canvasWidget.destroy()
+        #Getting f prev graph
+        global f
+        f = fArray[fI + 1]
+        #Changing canvas and toolbar
+        canvas = FigureCanvasTkAgg(f, frame)
+        canvas.draw()
+        canvasWidget = canvas.get_tk_widget()
+        canvasWidget.grid(row=2, column=1, columnspan=16, rowspan=12, sticky=N + S + W + E)
+        global toolbar
+        toolbar.destroy()
+        toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
+        fI = fI + 1
+    else:
+        messagebox.showerror(title="Agraph", message="There is no next graph.")
+
 
 ###########################################################################
 #The 4 functions below return f, a Figure that is then drawn on the canvas.
@@ -266,8 +332,8 @@ buttonWidth = 11
 refreshButt = Button(frame, text = "Refresh",bg = fgCol, fg =bgCol,font = "Courrier, 20", command=refreshPlot)
 loadButt = Button(frame, text = "Import",bg = fgCol, fg =bgCol,font = "Courrier, 20", command = openFile)
 exitButton = Button(frame, text = "Exit", bg = fgCol, fg = bgCol, font = "Courrier, 20")
-nextButton = Button(frame, text = "Next", bg = fgCol, fg = bgCol, font = "Courrier, 20")
-prevButton = Button(frame, text = "Previous", bg = fgCol, fg = bgCol, font = "Courrier, 20")
+nextButton = Button(frame, text = "Next", bg = fgCol, fg = bgCol, font = "Courrier, 20", command = nextRefresh)
+prevButton = Button(frame, text = "Previous", bg = fgCol, fg = bgCol, font = "Courrier, 20", command = prevRefresh)
 buttHeight = 1
 buttWidth = 7
 #refreshButt.configure(width = buttWidth, height = buttHeight)
