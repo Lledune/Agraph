@@ -13,11 +13,11 @@ import os
 dirname = os.path.dirname(__file__)
 dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
 dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
-dataThree = os.path.join(dirname, 'data/codeminer.gexf')
+dataThree = os.path.join(dirname, 'data/WebAtlas_EuroSiS.gexf')
 dirDic = {
     "Les miserables" : dataOne,
     "Airlines" : dataTwo,
-    "Code-miner" : dataThree
+    "Webatlas" : dataThree
 }
 
 #Color settings
@@ -73,13 +73,15 @@ checkedImport = False
 global globalImported
 globalImported = "path"
 
+global checkedLabel
+checkedLabel = False
 
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
 a.set_facecolor(fgCol)
 path = dataOne
-G = nx.read_gexf(dataOne)
+G = nx.read_gexf(dataOne, relabel = True)
 pos = nx.circular_layout(G)
 nx.draw_networkx(G, pos = pos, ax = a, with_labels=False)
 xlim = a.get_xlim()
@@ -106,6 +108,9 @@ def refreshGlobals():
 
     global globalData
     globalData = optionsCombo1.get()
+
+    global checkedLabel
+    checkedLabel = useLabelChecked.get()
 
     global globalImport
     global checkedImport
@@ -156,15 +161,15 @@ def refreshPlot():
     f = 0
     arg = globalLayout
     if (arg == "0"):
-        f = drawKamada(globalImport, "Kamada-kawai", "white", 30, False)
+        f = drawKamada(globalImport, "Kamada-kawai", "white", 30, checkedLabel)
     if (arg == "1"):
-        f = drawCircular(globalImport, "Circular", "white", 30, False)
+        f = drawCircular(globalImport, "Circular", "white", 30, checkedLabel)
     if (arg == "2"):
-        f = drawSpiral(globalImport, "Spiral", "white", 30, False)
+        f = drawSpiral(globalImport, "Spiral", "white", 30, checkedLabel)
     if (arg == "3"):
-        f = drawFruchterman(globalImport, "Fruchterman-reingold", "white", 30, False)
+        f = drawFruchterman(globalImport, "Fruchterman-reingold", "white", 30, checkedLabel)
     if (arg == "4"):
-        f = drawPlanar(globalImport, "Planar", "white", 30, False)
+        f = drawPlanar(globalImport, "Planar", "white", 30, checkedLabel)
     #storing graph
     global fArray
     fArray.append(f)
@@ -231,7 +236,7 @@ def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath)
+    G = nx.read_gexf(dataPath, relabel=True)
     pos = nx.circular_layout(G)
     nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
     xlim = a.get_xlim()
@@ -246,7 +251,7 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath)
+    G = nx.read_gexf(dataPath, relabel = True)
     pos = nx.kamada_kawai_layout(G)
     nodeList = list(G.nodes)
     degreeList = G.degree
@@ -262,7 +267,7 @@ def drawFruchterman(dataPath, titleString="Title", color="white", fontSize=30, l
     f = plt.Figure(figsize=(5, 4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath)
+    G = nx.read_gexf(dataPath, relabel = True)
     pos = nx.fruchterman_reingold_layout(G)
     nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
     xlim = a.get_xlim()
@@ -278,7 +283,7 @@ def drawSpiral(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath)
+    G = nx.read_gexf(dataPath, relabel = True)
     pos = nx.drawing.spiral_layout(G)
     nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
     xlim = a.get_xlim()
@@ -293,7 +298,7 @@ def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath)
+    G = nx.read_gexf(dataPath, relabel = True)
     pos = nx.drawing.planar_layout(G)
     nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
     xlim = a.get_xlim()
@@ -370,6 +375,9 @@ layoutLabel = Label(frame, text = "Layout : ",fg = fgCol, bg =bgCol,font = "Cour
 global useImportChecked
 useImportChecked = BooleanVar(window)
 useImportCheck = Checkbutton(frame, text = "Use import ", variable = useImportChecked, background = bgCol, fg = fgCol, activebackground = bgCol, onvalue = True)
+global useLabelChecked
+useLabelChecked = BooleanVar(window)
+useLabelCheck = Checkbutton(frame, text = "Use labels", variable = useLabelChecked, background = bgCol, fg = fgCol, activebackground = bgCol, onvalue = True)
 
 #text entries
 sizeEntry  = Entry(frame)
@@ -380,7 +388,7 @@ filterInput = DoubleVar(window)
 filterInput.set(5)
 
 #deroulantes
-optionData = ("Les miserables", "Airlines", "Code-miner")
+optionData = ("Les miserables", "Airlines", "Webatlas")
 optionDataVar = StringVar(window)
 optionDataVar.set(optionData[0])
 optionsDataMenu = OptionMenu(frame, optionDataVar, *optionData)
@@ -445,6 +453,7 @@ spectral.grid(column = 7, row = 0, columnspan = 3, sticky = N + S + W + E)
 fruchterman.grid(column = 10, row = 0, columnspan = 3, sticky = N + S + W + E)
 optionsCombo1.grid(column = 14, row = 0, columnspan = 4, sticky = N + S + W + E)
 useImportCheck.grid(column = 16, row = 1, columnspan = 2)
+useLabelCheck.grid(column = 14, row = 1, columnspan = 2)
 refreshButt.grid(column = 19, row = 0, columnspan = 3, sticky = N + S + W + E)
 loadButt.grid(column = 19, row = 1, columnspan = 3, sticky = N + S + W + E)
 colorLabel.grid(column = 19, row = 3, columnspan = 3, sticky = N + S + W + E)
