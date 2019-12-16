@@ -248,6 +248,8 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     a.set_facecolor(fgCol)
     G = nx.read_gexf(dataPath)
     pos = nx.kamada_kawai_layout(G)
+    nodeList = list(G.nodes)
+    degreeList = G.degree
     nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
@@ -463,6 +465,5 @@ canvas.draw()
 toolbarFrame.grid(column = 0, row = 14, columnspan = 10)
 toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
 
-print(radioVar)
-
+#print(radioVar)
 window.mainloop()
