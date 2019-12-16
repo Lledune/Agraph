@@ -236,14 +236,20 @@ def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel=True)
-    pos = nx.circular_layout(G)
-    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-    xlim = a.get_xlim()
-    ylim = a.get_ylim()
-    plt.axis('off')
-    a.set_title(titleString, fontsize = fontSize, color = color)
-    return f
+    G = nx.read_gexf(dataPath, relabel=False)
+    try:
+        G = nx.read_gexf(dataPath, relabel=True)
+    except nx.NetworkXError:
+        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+        G = nx.read_gexf(dataPath, relabel=False)
+    finally:
+        pos = nx.circular_layout(G)
+        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+        xlim = a.get_xlim()
+        ylim = a.get_ylim()
+        plt.axis('off')
+        a.set_title(titleString, fontsize = fontSize, color = color)
+        return f
 
 #Kamada
 def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
@@ -251,30 +257,40 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel = True)
-    pos = nx.kamada_kawai_layout(G)
-    nodeList = list(G.nodes)
-    degreeList = G.degree
-    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-    xlim = a.get_xlim()
-    ylim = a.get_ylim()
-    plt.axis('off')
-    a.set_title(titleString, fontsize = fontSize, color = color)
-    return f
+    try:
+        G = nx.read_gexf(dataPath, relabel=True)
+    except nx.NetworkXError:
+        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+        G = nx.read_gexf(dataPath, relabel=False)
+    finally:
+        pos = nx.kamada_kawai_layout(G)
+        nodeList = list(G.nodes)
+        degreeList = G.degree
+        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+        xlim = a.get_xlim()
+        ylim = a.get_ylim()
+        plt.axis('off')
+        a.set_title(titleString, fontsize = fontSize, color = color)
+        return f
 
 def drawFruchterman(dataPath, titleString="Title", color="white", fontSize=30, labels=False):
     global f
     f = plt.Figure(figsize=(5, 4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel = True)
-    pos = nx.fruchterman_reingold_layout(G)
-    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
-    xlim = a.get_xlim()
-    ylim = a.get_ylim()
-    plt.axis('off')
-    a.set_title(titleString, fontsize=fontSize, color=color)
-    return f
+    G = nx.read_gexf(dataPath, relabel=False)
+    try:
+        G = nx.read_gexf(dataPath, relabel=True)
+    except nx.NetworkXError:
+        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+    finally:
+        pos = nx.fruchterman_reingold_layout(G)
+        nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+        xlim = a.get_xlim()
+        ylim = a.get_ylim()
+        plt.axis('off')
+        a.set_title(titleString, fontsize=fontSize, color=color)
+        return f
 
 
 #Spectral
@@ -283,14 +299,20 @@ def drawSpiral(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel = True)
-    pos = nx.drawing.spiral_layout(G)
-    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-    xlim = a.get_xlim()
-    ylim = a.get_ylim()
-    plt.axis('off')
-    a.set_title(titleString, fontsize = fontSize, color = color)
-    return f
+    G = nx.read_gexf(dataPath, relabel=False)
+    try:
+        G = nx.read_gexf(dataPath, relabel=True)
+    except nx.NetworkXError:
+        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+        G = nx.read_gexf(dataPath, relabel=False)
+    finally:
+        pos = nx.drawing.spiral_layout(G)
+        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+        xlim = a.get_xlim()
+        ylim = a.get_ylim()
+        plt.axis('off')
+        a.set_title(titleString, fontsize = fontSize, color = color)
+        return f
 
 #Shell
 def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
@@ -298,14 +320,20 @@ def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel = True)
-    pos = nx.drawing.planar_layout(G)
-    nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-    xlim = a.get_xlim()
-    ylim = a.get_ylim()
-    plt.axis('off')
-    a.set_title(titleString, fontsize = fontSize, color = color)
-    return f
+    G = nx.read_gexf(dataPath, relabel=False)
+    try:
+        G = nx.read_gexf(dataPath, relabel=True)
+    except nx.NetworkXError:
+        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+        G = nx.read_gexf(dataPath, relabel=False)
+    finally:
+        pos = nx.drawing.planar_layout(G)
+        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
+        xlim = a.get_xlim()
+        ylim = a.get_ylim()
+        plt.axis('off')
+        a.set_title(titleString, fontsize = fontSize, color = color)
+        return f
 
 
 #Default graph to be displayed
@@ -473,6 +501,8 @@ canvas.draw()
 #toolbar
 toolbarFrame.grid(column = 0, row = 14, columnspan = 10)
 toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
+
+
 
 #print(radioVar)
 window.mainloop()
