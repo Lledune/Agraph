@@ -156,14 +156,15 @@ def refreshPlot():
     f = 0
     arg = globalLayout
     if (arg == "0"):
-        f = drawKamada(globalImport, "Kamada", "white", 30, False)
+        f = drawKamada(globalImport, "Kamada-kawai", "white", 30, False)
     if (arg == "1"):
         f = drawCircular(globalImport, "Circular", "white", 30, False)
     if (arg == "2"):
-        f = drawSpectral(globalImport, "Spectral", "white", 30, False)
+        f = drawSpiral(globalImport, "Spiral", "white", 30, False)
     if (arg == "3"):
-        f = drawShell(globalImport, "Shell", "white", 30, False)
-
+        f = drawFruchterman(globalImport, "Fruchterman-reingold", "white", 30, False)
+    if (arg == "4"):
+        f = drawPlanar(globalImport, "Planar", "white", 30, False)
     #storing graph
     global fArray
     fArray.append(f)
@@ -254,14 +255,29 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     a.set_title(titleString, fontsize = fontSize, color = color)
     return f
 
+def drawFruchterman(dataPath, titleString="Title", color="white", fontSize=30, labels=False):
+    global f
+    f = plt.Figure(figsize=(5, 4), facecolor=bgCol)
+    a = f.add_subplot(111)
+    a.set_facecolor(fgCol)
+    G = nx.read_gexf(dataPath)
+    pos = nx.fruchterman_reingold_layout(G)
+    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize=fontSize, color=color)
+    return f
+
+
 #Spectral
-def drawSpectral(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+def drawSpiral(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
     global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
     G = nx.read_gexf(dataPath)
-    pos = nx.spectral_layout(G)
+    pos = nx.drawing.spiral_layout(G)
     nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
@@ -270,13 +286,13 @@ def drawSpectral(dataPath, titleString = "Title", color = "white", fontSize = 30
     return f
 
 #Shell
-def drawShell(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
+def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
     global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
     G = nx.read_gexf(dataPath)
-    pos = nx.shell_layout(G)
+    pos = nx.drawing.planar_layout(G)
     nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
@@ -312,21 +328,22 @@ frame = Frame(window, bg = bgCol, bd = 1, relief = SUNKEN)
 toolbarFrame = Frame(master = window)
 
 #Radiochoice (exclusive choice)
-radioVals = ["0","1","2","3"]
-radioText = ["Kamada", "Circular", "Spectral", "Shell"]
+radioVals = ["0","1","2","3","4"]
+radioText = ["Kamada", "Circular", "Spiral", "Fruchterman", "Planar"]
 radioVar = StringVar(window)
 radioVar.set(radioVals[0])
 kamada = Radiobutton(frame, variable = radioVar, text = radioText[0], value = radioVals[0], bg = bgCol, fg = fgCol, font = "Courrier")
 circular = Radiobutton(frame, variable = radioVar, text = radioText[1], value = radioVals[1], bg = bgCol, font = "Courrier",fg = fgCol)
 spectral = Radiobutton(frame, variable = radioVar, text = radioText[2], value = radioVals[2], bg = bgCol, font = "Courrier",fg = fgCol)
-shell = Radiobutton(frame, variable = radioVar, text = radioText[3], value = radioVals[3], bg = bgCol, font = "Courrier",fg = fgCol)
+fruchterman = Radiobutton(frame, variable = radioVar, text = radioText[3], value = radioVals[3], bg = bgCol, font = "Courrier",fg = fgCol)
+planar = Radiobutton(frame, variable = radioVar, text = radioText[4], value = radioVals[4], bg = bgCol, font = "Courrier",fg = fgCol)
 buttonHeight= 5
 buttonWidth = 11
 #kamada.configure(width = buttonWidth, height = buttonHeight)
 #circular.configure(width = buttonWidth, height = buttonHeight)
 #spectral.configure(width = buttonWidth, height = buttonHeight)
 #shell.configure(width = buttonWidth, height = buttonHeight)
-        
+
 
 #Buttons
 refreshButt = Button(frame, text = "Refresh",bg = fgCol, fg =bgCol,font = "Courrier, 20", command=refreshPlot)
@@ -401,7 +418,7 @@ optionsCombo5.current(0)
 # canvas = FigureCanvasTkAgg(f, master = frame)
 # canvas.show()
 # canvas.get_tk_widget().grid(column = 2, row = 1, columnspan = 12, rowspan = 8)
-# 
+#
 # =============================================================================
 canvas = FigureCanvasTkAgg(f, frame)
 canvas.draw()
@@ -413,7 +430,7 @@ canvasWidget = canvas.get_tk_widget()
 for i in range(0,21):
     frame.grid_columnconfigure(i, minsize = 49)
 frame.grid_columnconfigure(13, minsize = 0)
-    
+
 for i in range(0,15):
     frame.grid_rowconfigure(i, minsize = 51)
 #########################
@@ -423,7 +440,7 @@ frame.grid(column = 0, row = 0, columnspan = 21, rowspan = 15, sticky = N + S + 
 kamada.grid(column = 1, row = 0, columnspan = 3, sticky = N + S + W + E)
 circular.grid(column = 4, row = 0, columnspan = 3, sticky = N + S + W + E)
 spectral.grid(column = 7, row = 0, columnspan = 3, sticky = N + S + W + E)
-shell.grid(column = 10, row = 0, columnspan = 3, sticky = N + S + W + E)
+fruchterman.grid(column = 10, row = 0, columnspan = 3, sticky = N + S + W + E)
 optionsCombo1.grid(column = 14, row = 0, columnspan = 4, sticky = N + S + W + E)
 useImportCheck.grid(column = 16, row = 1, columnspan = 2)
 refreshButt.grid(column = 19, row = 0, columnspan = 3, sticky = N + S + W + E)
