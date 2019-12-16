@@ -353,6 +353,7 @@ window.resizable(width=False, height=False)
 
 #background color
 window.config(background = bgCol)
+window.iconbitmap(os.path.join(dirname, 'agraph.ico'))
 
 #################
 #Widgets
