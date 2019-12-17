@@ -13,11 +13,11 @@ import os
 dirname = os.path.dirname(__file__)
 dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
 dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
-dataThree = os.path.join(dirname, 'data/WebAtlas_EuroSiS.gexf')
+dataThree = os.path.join(dirname, 'data/karate.gml')
 dirDic = {
     "Les miserables" : dataOne,
     "Airlines" : dataTwo,
-    "Webatlas" : dataThree
+    "Karate" : dataThree
 }
 
 #Color settings
@@ -141,7 +141,6 @@ def refreshGlobals():
 
     #print(globalData) #Can use this line to print on console the variable you want
 
-
 ################
 #Plot functions
 ################
@@ -160,6 +159,8 @@ def refreshPlot():
     global f
     f = 0
     arg = globalLayout
+
+    #Drawing
     if (arg == "0"):
         f = drawKamada(globalImport, "Kamada-kawai", "white", 30, checkedLabel)
     if (arg == "1"):
@@ -236,24 +237,42 @@ def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel=False)
-    try:
-        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
-    except nx.NetworkXError:
-        try:
-            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
 
-        except:
-            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-            G = nx.read_gexf(dataPath, relabel=False)
-    finally:
-        pos = nx.circular_layout(G)
-        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-        xlim = a.get_xlim()
-        ylim = a.get_ylim()
-        plt.axis('off')
-        a.set_title(titleString, fontsize = fontSize, color = color)
-        return f
+    #Data extension checking, supports gml and gexf
+    fileName, fileExtension = os.path.splitext(dataPath)
+    gexfBool = (fileExtension == ".gexf")
+    gmlBool = (fileExtension == ".gml")
+    print(gexfBool, gmlBool)
+    #GEXF
+    if(gexfBool):
+        G = nx.read_gexf(dataPath, relabel=False)
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
+        except nx.NetworkXError:
+            try:
+                G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+            except nx.NetworkXError:
+                messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+                G = nx.read_gexf(dataPath, relabel=False)
+
+    if(gmlBool):
+        gmlLabelsBool = 'label'
+        if(labels == False):
+            gmlLabelsBool = None
+        try:
+            G = nx.read_gml(dataPath, label = gmlLabelsBool)
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="Error in file labels, one node or more may not have 'label' attribute. Labels will be replaced with node ID.")
+            G = nx.read_gml(dataPath, label = None)
+
+    pos = nx.circular_layout(G)
+    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize=fontSize, color=color)
+    return f
+
 
 #Kamada
 def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
@@ -261,48 +280,82 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    try:
-        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
-    except nx.NetworkXError:
-        try:
-            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
 
+    #Data extension checking, supports gml and gexf
+    fileName, fileExtension = os.path.splitext(dataPath)
+    gexfBool = (fileExtension == ".gexf")
+    gmlBool = (fileExtension == ".gml")
+
+    if(gexfBool):
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
         except nx.NetworkXError:
-            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-            G = nx.read_gexf(dataPath, relabel=False)
-    finally:
-        pos = nx.kamada_kawai_layout(G)
-        nodeList = list(G.nodes)
-        degreeList = G.degree
-        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-        xlim = a.get_xlim()
-        ylim = a.get_ylim()
-        plt.axis('off')
-        a.set_title(titleString, fontsize = fontSize, color = color)
-        return f
+            try:
+                G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+
+            except nx.NetworkXError:
+                messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+                G = nx.read_gexf(dataPath, relabel=False)
+
+    if(gmlBool):
+        gmlLabelsBool = 'label'
+        if(labels == False):
+            gmlLabelsBool = None
+        try:
+            G = nx.read_gml(dataPath, label = gmlLabelsBool)
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="Error in file labels, one node or more may not have 'label' attribute. Labels will be replaced with node ID.")
+            G = nx.read_gml(dataPath, label = None)
+
+    pos = nx.kamada_kawai_layout(G)
+    nodeList = list(G.nodes)
+    degreeList = G.degree
+    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize=fontSize, color=color)
+    return f
 
 def drawFruchterman(dataPath, titleString="Title", color="white", fontSize=30, labels=False):
     global f
     f = plt.Figure(figsize=(5, 4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel=False)
-    try:
-        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
-    except nx.NetworkXError:
+
+    #Data extension checking, supports gml and gexf
+    fileName, fileExtension = os.path.splitext(dataPath)
+    gexfBool = (fileExtension == ".gexf")
+    gmlBool = (fileExtension == ".gml")
+
+    if(gexfBool):
+        G = nx.read_gexf(dataPath, relabel=False)
         try:
-            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+            G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
         except nx.NetworkXError:
-            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-            G = nx.read_gexf(dataPath, relabel=False)
-    finally:
-        pos = nx.fruchterman_reingold_layout(G)
-        nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
-        xlim = a.get_xlim()
-        ylim = a.get_ylim()
-        plt.axis('off')
-        a.set_title(titleString, fontsize=fontSize, color=color)
-        return f
+            try:
+                G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+            except nx.NetworkXError:
+                messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+                G = nx.read_gexf(dataPath, relabel=False)
+
+    if(gmlBool):
+        gmlLabelsBool = 'label'
+        if(labels == False):
+            gmlLabelsBool = None
+        try:
+            G = nx.read_gml(dataPath, label = gmlLabelsBool)
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="Error in file labels, one node or more may not have 'label' attribute. Labels will be replaced with node ID.")
+            G = nx.read_gml(dataPath, label = None)
+
+    pos = nx.fruchterman_reingold_layout(G)
+    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize=fontSize, color=color)
+    return f
 
 
 #Spectral
@@ -311,24 +364,41 @@ def drawSpiral(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel=False)
-    try:
-        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
-    except nx.NetworkXError:
-        try:
-            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
 
+    # Data extension checking, supports gml and gexf
+    fileName, fileExtension = os.path.splitext(dataPath)
+    gexfBool = (fileExtension == ".gexf")
+    gmlBool = (fileExtension == ".gml")
+
+    if(gexfBool):
+        G = nx.read_gexf(dataPath, relabel=False)
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
         except nx.NetworkXError:
-            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-            G = nx.read_gexf(dataPath, relabel=False)
-    finally:
-        pos = nx.drawing.spiral_layout(G)
-        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-        xlim = a.get_xlim()
-        ylim = a.get_ylim()
-        plt.axis('off')
-        a.set_title(titleString, fontsize = fontSize, color = color)
-        return f
+            try:
+                G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+
+            except nx.NetworkXError:
+                messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+                G = nx.read_gexf(dataPath, relabel=False)
+
+    if(gmlBool):
+        gmlLabelsBool = 'label'
+        if(labels == False):
+            gmlLabelsBool = None
+        try:
+            G = nx.read_gml(dataPath, label = gmlLabelsBool)
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="Error in file labels, one node or more may not have 'label' attribute. Labels will be replaced with node ID.")
+            G = nx.read_gml(dataPath, label = None)
+
+    pos = nx.drawing.spiral_layout(G)
+    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize=fontSize, color=color)
+    return f
 
 #Shell
 def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, labels = False):
@@ -336,24 +406,41 @@ def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
-    G = nx.read_gexf(dataPath, relabel=False)
-    try:
-        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
-    except nx.NetworkXError:
-        try:
-            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
 
+    # Data extension checking, supports gml and gexf
+    fileName, fileExtension = os.path.splitext(dataPath)
+    gexfBool = (fileExtension == ".gexf")
+    gmlBool = (fileExtension == ".gml")
+
+    if(gexfBool):
+        G = nx.read_gexf(dataPath, relabel=False)
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
         except nx.NetworkXError:
-            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-            G = nx.read_gexf(dataPath, relabel=False)
-    finally:
-        pos = nx.drawing.planar_layout(G)
-        nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
-        xlim = a.get_xlim()
-        ylim = a.get_ylim()
-        plt.axis('off')
-        a.set_title(titleString, fontsize = fontSize, color = color)
-        return f
+            try:
+                G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+
+            except nx.NetworkXError:
+                messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+                G = nx.read_gexf(dataPath, relabel=False)
+
+    if(gmlBool):
+        gmlLabelsBool = 'label'
+        if(labels == False):
+            gmlLabelsBool = None
+        try:
+            G = nx.read_gml(dataPath, label = gmlLabelsBool)
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="Error in file labels, one node or more may not have 'label' attribute. Labels will be replaced with node ID.")
+            G = nx.read_gml(dataPath, label = None)
+
+    pos = nx.drawing.planar_layout(G)
+    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    xlim = a.get_xlim()
+    ylim = a.get_ylim()
+    plt.axis('off')
+    a.set_title(titleString, fontsize=fontSize, color=color)
+    return f
 
 
 #Default graph to be displayed
@@ -436,8 +523,8 @@ filterEntry = Entry(frame)
 filterInput = DoubleVar(window)
 filterInput.set(5)
 
-#deroulantes
-optionData = ("Les miserables", "Airlines", "Webatlas")
+#déroulantes
+optionData = ("Les miserables", "Airlines", "Karate")
 optionDataVar = StringVar(window)
 optionDataVar.set(optionData[0])
 optionsDataMenu = OptionMenu(frame, optionDataVar, *optionData)
