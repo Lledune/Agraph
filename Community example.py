@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 #paths names
 dirname = os.path.dirname(__file__)
-dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
+dataOne = 'c:/users/lucien/desktop/agraph/data/lesmiserables.gexf'
 dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
 dataThree = 'c:/users/lucien/desktop/agraph/data/karate.gml'
 dirDic = {
@@ -15,7 +15,7 @@ dirDic = {
 #better with karate_graph() as defined in networkx example.
 #erdos renyi don't have true community structure
 G = nx.read_gml(dataThree, label=None)
-
+G = nx.read_gexf(dataOne, relabel=True)
 #first compute the best partition
 #partition = community.best_partition(G)
 D = community.generate_dendrogram(G)
@@ -35,4 +35,5 @@ for com in set(partition.values()) :
 
 
 nx.draw_networkx_edges(G, pos, alpha=0.5)
+nx.draw_networkx_labels(G, pos)
 plt.show()

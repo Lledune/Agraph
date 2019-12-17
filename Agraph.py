@@ -236,14 +236,17 @@ def drawGraph(G, pos, a, labels):
         nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = bgCol)
     else :
         partition = community.best_partition(G)
+        labelSet = nx.get_node_attributes(G, 'label')
         size = float(len(set(partition.values())))
         count = 0.
         for com in set(partition.values()) :
             count = count + 1.
             list_nodes = [nodes for nodes in partition.keys() if partition[nodes] == com]
-            nx.draw_networkx_nodes(G, pos, list_nodes, with_labels=labels, node_color = str(count / size), ax = a)
+            nx.draw_networkx_nodes(G, pos, list_nodes, label = labelSet, node_color = str(count / size), ax = a)
         nx.draw_networkx_edges(G, pos, alpha=0.5, ax = a)
-        
+        if(labels):
+            nx.draw_networkx_labels(G, pos , ax = a)
+
 
 ###########################################################################
 #The 4 functions below return f, a Figure that is then drawn on the canvas.
