@@ -8,6 +8,7 @@ import networkx as nx
 mpl.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import os
+import community
 
 #paths names
 dirname = os.path.dirname(__file__)
@@ -21,8 +22,8 @@ dirDic = {
 }
 
 #Color settings
-bgCol = "#392239"
-fgCol = "#ac93ac"
+bgCol = "#0088AA"
+fgCol = "#B7C8C4"
 
 #Global variables
 global fArray
@@ -49,9 +50,6 @@ globalImport = dirDic["Les miserables"]
 global globalColMet
 globalColMet = 0 #metrics to be defined, but same principle as globalLayout
 
-global globalColset
-globalColset = "colorset"
-
 global globalSizeMet
 globalSizeMet = 0 #idem
 
@@ -75,6 +73,9 @@ globalImported = "path"
 
 global checkedLabel
 checkedLabel = False
+
+global globalColCom
+globalColCom = False
 
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
@@ -108,6 +109,9 @@ def refreshGlobals():
 
     global globalData
     globalData = optionsCombo1.get()
+    
+    global globalColCom
+    globalColCom = (optionsCombo5.get() == "Communautés colorées")
 
     global checkedLabel
     checkedLabel = useLabelChecked.get()
@@ -123,9 +127,6 @@ def refreshGlobals():
 
     global globalColMet
     globalColMet = 0  #todo
-
-    global globalColset
-    globalColset = "colorset" #todo
 
     global globalSizeMet
     globalSizeMet = 0  # idem #todo
@@ -228,6 +229,22 @@ def nextRefresh():
     else:
         messagebox.showerror(title="Agraph", message="There is no next graph.")
 
+# DRAW THE GRAPH WITH OR WITHOUT COMMUNITIES
+
+def drawGraph(G, pos, a, labels):
+    if not globalColCom :
+        nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = bgCol)
+    else :
+        partition = community.best_partition(G)
+        size = float(len(set(partition.values())))
+        pos = nx.spring_layout(G)
+        count = 0.
+        for com in set(partition.values()) :
+            count = count + 1.
+            list_nodes = [nodes for nodes in partition.keys() if partition[nodes] == com]
+            nx.draw_networkx_nodes(G, pos, list_nodes, with_labels=labels, node_color = str(count / size))
+        nx.draw_networkx_edges(G, pos, alpha=0.5)
+        
 
 ###########################################################################
 #The 4 functions below return f, a Figure that is then drawn on the canvas.
@@ -266,7 +283,7 @@ def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30
             G = nx.read_gml(dataPath, label = None)
 
     pos = nx.circular_layout(G)
-    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    drawGraph(G, pos, a, labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
     plt.axis('off')
@@ -307,10 +324,11 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
             messagebox.showerror(title="Agraph", message="Error in file labels, one node or more may not have 'label' attribute. Labels will be replaced with node ID.")
             G = nx.read_gml(dataPath, label = None)
 
+
     pos = nx.kamada_kawai_layout(G)
     nodeList = list(G.nodes)
     degreeList = G.degree
-    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    drawGraph(G, pos, a, labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
     plt.axis('off')
@@ -350,7 +368,7 @@ def drawFruchterman(dataPath, titleString="Title", color="white", fontSize=30, l
             G = nx.read_gml(dataPath, label = None)
 
     pos = nx.fruchterman_reingold_layout(G)
-    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    drawGraph(G, pos, a, labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
     plt.axis('off')
@@ -393,7 +411,7 @@ def drawSpiral(dataPath, titleString = "Title", color = "white", fontSize = 30, 
             G = nx.read_gml(dataPath, label = None)
 
     pos = nx.drawing.spiral_layout(G)
-    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    drawGraph(G, pos, a, labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
     plt.axis('off')
@@ -435,7 +453,7 @@ def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, 
             G = nx.read_gml(dataPath, label = None)
 
     pos = nx.drawing.planar_layout(G)
-    nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
+    drawGraph(G, pos, a, labels)
     xlim = a.get_xlim()
     ylim = a.get_ylim()
     plt.axis('off')
@@ -460,7 +478,7 @@ window.resizable(width=False, height=False)
 
 #background color
 window.config(background = bgCol)
-window.iconbitmap(os.path.join(dirname, 'agraph.ico'))
+#window.iconbitmap(os.path.join(dirname, 'agraph.ico'))
 
 #################
 #Widgets
@@ -552,9 +570,9 @@ optionsDataMenu4 = OptionMenu(frame, optionMetricsVar4, *optionMetrics4)
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 
-optionMetrics5 = ("colset1", "colset2", "colset3")
+optionMetrics5 = ("Communautés non-colorées", "Communautés colorées")
 optionMetricsVar5 = StringVar(window)
-optionMetricsVar5.set(optionMetrics4[0])
+optionMetricsVar5.set(optionMetrics5[0])
 optionsDataMenu5 = OptionMenu(frame, optionMetricsVar5, *optionMetrics5)
 optionsCombo5 = ttk.Combobox(frame, values = optionMetrics5)
 optionsCombo5.current(0)
