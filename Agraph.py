@@ -77,6 +77,9 @@ checkedLabel = False
 global globalColCom
 globalColCom = False
 
+global globalOptionsMet2
+globalOptionsMet2 = ""
+
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
@@ -109,6 +112,9 @@ def refreshGlobals():
 
     global globalData
     globalData = optionsCombo1.get()
+
+    global globalOptionsMet2
+    globalOptionsMet2 = optionsCombo2.get()
     
     global globalColCom
     globalColCom = (optionsCombo5.get() == "Communautés colorées")
@@ -173,6 +179,7 @@ def refreshPlot():
     if (arg == "4"):
         f = drawPlanar(globalImport, "Planar", "white", 30, checkedLabel)
     #storing graph
+
     global fArray
     fArray.append(f)
 
@@ -232,9 +239,9 @@ def nextRefresh():
 # DRAW THE GRAPH WITH OR WITHOUT COMMUNITIES
 
 def drawGraph(G, pos, a, labels):
-    if not globalColCom :
+    if(globalOptionsMet2 == "Default"):
         nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = bgCol)
-    else :
+    if(globalOptionsMet2 == "Communities"):
         partition = community.best_partition(G)
         labelSet = nx.get_node_attributes(G, 'label')
         size = float(len(set(partition.values())))
@@ -480,7 +487,7 @@ window.resizable(width=False, height=False)
 
 #background color
 window.config(background = bgCol)
-#window.iconbitmap(os.path.join(dirname, 'agraph.ico'))
+window.iconbitmap(os.path.join(dirname, 'agraph.ico'))
 
 #################
 #Widgets
@@ -551,7 +558,7 @@ optionsDataMenu = OptionMenu(frame, optionDataVar, *optionData)
 optionsCombo1 = ttk.Combobox(frame, values = optionData)
 optionsCombo1.current(0)
 
-optionMetrics2 = ("met1", "met2", "met3")
+optionMetrics2 = ("Default","Communities", "met3")
 optionMetricsVar2 = StringVar(window)
 optionMetricsVar2.set(optionMetrics2[0])
 optionsDataMenu2 = OptionMenu(frame, optionMetricsVar2, *optionMetrics2)
@@ -572,7 +579,7 @@ optionsDataMenu4 = OptionMenu(frame, optionMetricsVar4, *optionMetrics4)
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 
-optionMetrics5 = ("Communautés non-colorées", "Communautés colorées")
+optionMetrics5 = ("col1", "col2")
 optionMetricsVar5 = StringVar(window)
 optionMetricsVar5.set(optionMetrics5[0])
 optionsDataMenu5 = OptionMenu(frame, optionMetricsVar5, *optionMetrics5)
