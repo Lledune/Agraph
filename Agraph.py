@@ -80,6 +80,9 @@ globalColCom = False
 global globalOptionsMet2
 globalOptionsMet2 = ""
 
+global cmap1
+cmap1 = ""
+
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
@@ -109,6 +112,9 @@ def refreshGlobals():
 
     global globalLayout
     globalLayout = radioVar.get()
+
+    global cmap1
+    cmap1 = optionsCombo5.get()
 
     global globalData
     globalData = optionsCombo1.get()
@@ -239,8 +245,13 @@ def nextRefresh():
 # DRAW THE GRAPH WITH OR WITHOUT COMMUNITIES
 
 def drawGraph(G, pos, a, labels):
+
+
     if(globalOptionsMet2 == "Default"):
-        nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = bgCol)
+        if(cmap1 == "Viridis"):
+            nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = plt.cm.viridis)
+        elif(cmap1 == "Magma"):
+            nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = plt.cm.magma)
     if(globalOptionsMet2 == "Communities"):
         partition = community.best_partition(G)
         labelSet = nx.get_node_attributes(G, 'label')
@@ -552,37 +563,22 @@ filterInput.set(5)
 
 #déroulantes
 optionData = ("Les miserables", "Airlines", "Karate")
-optionDataVar = StringVar(window)
-optionDataVar.set(optionData[0])
-optionsDataMenu = OptionMenu(frame, optionDataVar, *optionData)
 optionsCombo1 = ttk.Combobox(frame, values = optionData)
 optionsCombo1.current(0)
 
 optionMetrics2 = ("Default","Communities", "met3")
-optionMetricsVar2 = StringVar(window)
-optionMetricsVar2.set(optionMetrics2[0])
-optionsDataMenu2 = OptionMenu(frame, optionMetricsVar2, *optionMetrics2)
 optionsCombo2 = ttk.Combobox(frame, values = optionMetrics2)
 optionsCombo2.current(0)
 
 optionMetrics3 = ("met1", "met2", "met3")
-optionMetricsVar3 = StringVar(window)
-optionMetricsVar3.set(optionMetrics3[0])
-optionsDataMenu3 = OptionMenu(frame, optionMetricsVar3, *optionMetrics3)
 optionsCombo3 = ttk.Combobox(frame, values = optionMetrics3)
 optionsCombo3.current(0)
 
 optionMetrics4 = ("met1", "met2", "met3")
-optionMetricsVar4 = StringVar(window)
-optionMetricsVar4.set(optionMetrics4[0])
-optionsDataMenu4 = OptionMenu(frame, optionMetricsVar4, *optionMetrics4)
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 
-optionMetrics5 = ("col1", "col2")
-optionMetricsVar5 = StringVar(window)
-optionMetricsVar5.set(optionMetrics5[0])
-optionsDataMenu5 = OptionMenu(frame, optionMetricsVar5, *optionMetrics5)
+optionMetrics5 = ("Viridis", "Magma")
 optionsCombo5 = ttk.Combobox(frame, values = optionMetrics5)
 optionsCombo5.current(0)
 

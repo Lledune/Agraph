@@ -22,6 +22,9 @@ D = community.generate_dendrogram(G)
 D = G
 partition = community.best_partition(D)
 
+
+
+
 #drawing
 size = float(len(set(partition.values())))
 pos = nx.circular_layout(G)
