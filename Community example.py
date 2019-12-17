@@ -1,19 +1,30 @@
 import community
 import networkx as nx
 import matplotlib.pyplot as plt
-
+import os
+#paths names
+dirname = os.path.dirname(__file__)
+dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
+dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
+dataThree = 'c:/users/lucien/desktop/agraph/data/karate.gml'
+dirDic = {
+    "Les miserables" : dataOne,
+    "Airlines" : dataTwo,
+    "Karate" : dataThree
+}
 #better with karate_graph() as defined in networkx example.
 #erdos renyi don't have true community structure
-G = nx.erdos_renyi_graph(30, 0.05)
+G = nx.read_gml(dataThree, label=None)
 
 #first compute the best partition
 #partition = community.best_partition(G)
 D = community.generate_dendrogram(G)
-partition = community.partition_at_level(D, -1)
+D = G
+partition = community.best_partition(D)
 
 #drawing
 size = float(len(set(partition.values())))
-pos = nx.spring_layout(G)
+pos = nx.circular_layout(G)
 count = 0.
 for com in set(partition.values()) :
     count = count + 1.

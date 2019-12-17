@@ -237,13 +237,12 @@ def drawGraph(G, pos, a, labels):
     else :
         partition = community.best_partition(G)
         size = float(len(set(partition.values())))
-        pos = nx.spring_layout(G)
         count = 0.
         for com in set(partition.values()) :
             count = count + 1.
             list_nodes = [nodes for nodes in partition.keys() if partition[nodes] == com]
-            nx.draw_networkx_nodes(G, pos, list_nodes, with_labels=labels, node_color = str(count / size))
-        nx.draw_networkx_edges(G, pos, alpha=0.5)
+            nx.draw_networkx_nodes(G, pos, list_nodes, with_labels=labels, node_color = str(count / size), ax = a)
+        nx.draw_networkx_edges(G, pos, alpha=0.5, ax = a)
         
 
 ###########################################################################
