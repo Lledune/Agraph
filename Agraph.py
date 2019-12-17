@@ -238,10 +238,14 @@ def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30
     a.set_facecolor(fgCol)
     G = nx.read_gexf(dataPath, relabel=False)
     try:
-        G = nx.read_gexf(dataPath, relabel=True)
+        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
     except nx.NetworkXError:
-        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-        G = nx.read_gexf(dataPath, relabel=False)
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+
+        except:
+            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+            G = nx.read_gexf(dataPath, relabel=False)
     finally:
         pos = nx.circular_layout(G)
         nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
@@ -258,10 +262,14 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     a = f.add_subplot(111)
     a.set_facecolor(fgCol)
     try:
-        G = nx.read_gexf(dataPath, relabel=True)
+        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
     except nx.NetworkXError:
-        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-        G = nx.read_gexf(dataPath, relabel=False)
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+            G = nx.read_gexf(dataPath, relabel=False)
     finally:
         pos = nx.kamada_kawai_layout(G)
         nodeList = list(G.nodes)
@@ -280,9 +288,13 @@ def drawFruchterman(dataPath, titleString="Title", color="white", fontSize=30, l
     a.set_facecolor(fgCol)
     G = nx.read_gexf(dataPath, relabel=False)
     try:
-        G = nx.read_gexf(dataPath, relabel=True)
+        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
     except nx.NetworkXError:
-        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+            G = nx.read_gexf(dataPath, relabel=False)
     finally:
         pos = nx.fruchterman_reingold_layout(G)
         nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels)
@@ -301,10 +313,14 @@ def drawSpiral(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     a.set_facecolor(fgCol)
     G = nx.read_gexf(dataPath, relabel=False)
     try:
-        G = nx.read_gexf(dataPath, relabel=True)
+        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
     except nx.NetworkXError:
-        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-        G = nx.read_gexf(dataPath, relabel=False)
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+            G = nx.read_gexf(dataPath, relabel=False)
     finally:
         pos = nx.drawing.spiral_layout(G)
         nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
@@ -322,10 +338,14 @@ def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     a.set_facecolor(fgCol)
     G = nx.read_gexf(dataPath, relabel=False)
     try:
-        G = nx.read_gexf(dataPath, relabel=True)
+        G = nx.read_gexf(dataPath, relabel=True, version = "1.1draft")
     except nx.NetworkXError:
-        messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
-        G = nx.read_gexf(dataPath, relabel=False)
+        try:
+            G = nx.read_gexf(dataPath, relabel=True, version="1.2draft")
+
+        except nx.NetworkXError:
+            messagebox.showerror(title="Agraph", message="There was duplicate on labels, using node number instead.")
+            G = nx.read_gexf(dataPath, relabel=False)
     finally:
         pos = nx.drawing.planar_layout(G)
         nx.draw_networkx(G, pos = pos, ax = a, with_labels = labels)
