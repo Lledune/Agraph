@@ -94,6 +94,12 @@ maxSize = 100
 global globalOptionsMet3
 globalOptionsMet3 = "Default"
 
+global globalOptionsMet4
+globalOptionsMet4 = "Default"
+
+global threshold
+threshold = 100
+
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
@@ -135,6 +141,9 @@ def refreshGlobals():
     global globalLayout
     globalLayout = radioVar.get()
 
+    global threshold
+    threshold = float(filterEntry.get())
+
     global cmap1
     cmap1 = optionsCombo5.get()
 
@@ -146,9 +155,9 @@ def refreshGlobals():
 
     global globalOptionsMet3
     globalOptionsMet3 = optionsCombo3.get()
-    
-    global globalColCom
-    globalColCom = (optionsCombo5.get() == "Communautés colorées")
+
+    global globalOptionsMet4
+    globalOptionsMet4 = optionsCombo4.get()
 
     global checkedLabel
     checkedLabel = useLabelChecked.get()
@@ -270,6 +279,61 @@ def nextRefresh():
 # DRAW THE GRAPH WITH OR WITHOUT COMMUNITIES
 
 def drawGraph(G, pos, a, labels):
+
+    #Changing G for threshold here
+
+
+    #Check filter metric
+    if(globalOptionsMet4 == "Default"):
+        G = G
+
+    if (globalOptionsMet4 == "Degree"):
+        displayedNodes = []
+        nx.set_node_attributes(G, values=nx.degree_centrality(G), name='degree')
+        for node, data in G.nodes(data=True):
+            if (data['degree'] > threshold):
+                displayedNodes.append(node)
+        G = G.subgraph(displayedNodes)
+
+    if (globalOptionsMet4 == "Between Centrality"):
+        displayedNodes = []
+        # Metrics computing
+        betweenCentralities = nx.betweenness_centrality(G)
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=betweenCentralities, name='betweenCentrality')
+
+        # iterate trough nodes
+        for node, data in G.nodes(data=True):
+            if (data['betweenCentrality'] > threshold):
+                displayedNodes.append(node)
+
+        G = G.subgraph(displayedNodes)
+
+    if (globalOptionsMet4 == "Load Centrality"):
+        # Metrics computing
+        loadCentralities = nx.load_centrality(G)
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=loadCentralities, name='loadCentrality')
+
+        # iterate trough nodes
+        for node, data in G.nodes(data=True):
+            if (data['loadCentrality'] > threshold):
+                displayedNodes.append(node)
+
+        G = G.subgraph(displayedNodes)
+
+    if (globalOptionsMet4 == "Subgraph Centrality"):
+        # Metrics computing
+        subgraphCentralities = nx.subgraph_centrality(G)
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=subgraphCentralities, name='subgraphCentrality')
+
+        # iterate trough nodes
+        for node, data in G.nodes(data=True):
+            if (data['subgraphCentrality'] > threshold):
+                displayedNodes.append(node)
+
+        G = G.subgraph(displayedNodes)
 
     #Choosing size,  the size list will be defined here for the rest of the function
     sizeM = maxSize
@@ -712,9 +776,7 @@ useLabelCheck = Checkbutton(frame, text = "Use labels", variable = useLabelCheck
 sizeEntry  = Entry(frame)
 sizeEntry.insert(END, '100')
 filterEntry = Entry(frame)
-filterInput = DoubleVar(window)
-filterInput.set(5)
-
+filterEntry.insert(END, '100')
 #déroulantes
 optionData = ("Les miserables", "Airlines", "Karate")
 optionsCombo1 = ttk.Combobox(frame, values = optionData)
@@ -728,7 +790,7 @@ optionMetrics3 = ("Default", "Degree", "Between Centrality", "Subgraph Centralit
 optionsCombo3 = ttk.Combobox(frame, values = optionMetrics3)
 optionsCombo3.current(0)
 
-optionMetrics4 = ("met122", "met2", "met3")
+optionMetrics4 = ("Default", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 

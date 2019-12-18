@@ -45,13 +45,18 @@ def normalizeSize(val, max, min, m):
     val = ((val-min)/max)*m
     return val
 
-pos = nx.circular_layout(G)
+displayedNodes = []
 nodeColors = []
 nodeSizes = []
-
 for node, data in G.nodes(data = True):
-    nodeColors.append(normalize(data['degreeTest'], maxdeg, mindeg))
-    nodeSizes.append((normalizeSize(data['degreeTest'], maxdeg, mindeg, 500)+1))
+    if(data['degreeTest'] > 0.2):
+        displayedNodes.append(node)
+        nodeColors.append(normalize(data['degreeTest'], maxdeg, mindeg))
+        nodeSizes.append((normalizeSize(data['degreeTest'], maxdeg, mindeg, 500) + 1))
 
-nx.draw(G, vmax = 1, vmin = 0, cmap = plt.cm.viridis, with_labels=False, node_size = nodeSizes, node_color = nodeColors)
+G = G.subgraph(displayedNodes)
+pos = nx.circular_layout(G)
+
+
+nx.draw(G, vmax = 1, vmin = 0, cmap = plt.cm.viridis, with_labels=False, node_size = nodeSizes, node_color = nodeColors, nodelist = displayedNodes)
 plt.show()
