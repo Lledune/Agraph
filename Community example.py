@@ -2,6 +2,8 @@ import community
 import networkx as nx
 import matplotlib.pyplot as plt
 import os
+from matplotlib.colors import ListedColormap
+import palettable
 #paths names
 dirname = os.path.dirname(__file__)
 dataOne = 'c:/users/lucien/desktop/agraph/data/lesmiserables.gexf'
@@ -12,10 +14,12 @@ dirDic = {
     "Airlines" : dataTwo,
     "Karate" : dataThree
 }
+
 #better with karate_graph() as defined in networkx example.
 #erdos renyi don't have true community structure
 G = nx.read_gml(dataThree, label=None)
-G = nx.read_gexf(dataOne, relabel=True)
+cmap = ListedColormap(palettable.matplotlib.Viridis_20.mpl_colors, N = len(G))
+
 #first compute the best partition
 #partition = community.best_partition(G)
 D = community.generate_dendrogram(G)
@@ -23,20 +27,24 @@ D = G
 partition = community.best_partition(D)
 
 
+from operator import itemgetter
+degrees = nx.degree_centrality(G)
+nx.set_node_attributes(G, values = degrees, name = 'degreeTest')
+nNodes = len(G)
+maxdeg = max(degrees.values())
+mindeg = min(degrees.values())
 
 
-#drawing
-size = float(len(set(partition.values())))
+#lenpalette is the number of colors in palette
+def normalize(val, max, min):
+    val = ((val-min)/max)
+    return val
+
 pos = nx.circular_layout(G)
-count = 0.
-for com in set(partition.values()) :
-    count = count + 1.
-    list_nodes = [nodes for nodes in partition.keys()
-                                if partition[nodes] == com]
-    nx.draw_networkx_nodes(G, pos, list_nodes, node_size = 20,
-                                node_color = str(count / size))
+nodeColors = []
 
+for node, data in G.nodes(data = True):
+    nodeColors.append(normalize(data['degreeTest'], maxdeg, mindeg))
 
-nx.draw_networkx_edges(G, pos, alpha=0.5)
-nx.draw_networkx_labels(G, pos)
+nx.draw(G, vmax = 1, vmin = 0, cmap = plt.cm.viridis, with_labels=False, node_size = 25, node_color = nodeColors)
 plt.show()

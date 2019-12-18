@@ -5,10 +5,15 @@ from tkinter.filedialog import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
+import palettable
+from matplotlib.colors import ListedColormap
+
 mpl.use('TkAgg')
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 import os
 import community
+import palettable as pal
+
 
 #paths names
 dirname = os.path.dirname(__file__)
@@ -106,6 +111,10 @@ def openFile():
     global globalImported
     globalImported = askopenfilename(parent = window)
     print(globalImported)
+
+def normalize(val, max, min):
+    val = ((val-min)/max)
+    return val
 
 #Refresh global variables (take widget values)
 def refreshGlobals():
@@ -246,13 +255,22 @@ def nextRefresh():
 
 def drawGraph(G, pos, a, labels):
 
+    #Choosing cmap for colors
+    cmapChosen = plt.cm.viridis
+    if(cmap1 == "Viridis"):
+        cmapChosen = plt.cm.viridis
+    if(cmap1 == "Magma"):
+        cmapChosen = plt.cm.magma
 
     if(globalOptionsMet2 == "Default"):
-        if(cmap1 == "Viridis"):
-            nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = plt.cm.viridis)
-        elif(cmap1 == "Magma"):
-            nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = plt.cm.magma)
+            nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = cmapChosen)
     if(globalOptionsMet2 == "Communities"):
+        cmapUsed = ""
+        if(cmap1 == "Viridis"):
+            cmapUsed = ListedColormap(palettable.colorbrewer.qualitative.Set3_12.mpl_colors, N = len(G))
+        if(cmap1 == "Magma"):
+            cmapUsed = ListedColormap(palettable.colorbrewer.qualitative.Set1_9.mpl_colors, N = len(G))
+
         partition = community.best_partition(G)
         labelSet = nx.get_node_attributes(G, 'label')
         size = float(len(set(partition.values())))
@@ -260,10 +278,84 @@ def drawGraph(G, pos, a, labels):
         for com in set(partition.values()) :
             count = count + 1.
             list_nodes = [nodes for nodes in partition.keys() if partition[nodes] == com]
-            nx.draw_networkx_nodes(G, pos, list_nodes, label = labelSet, node_color = str(count / size), ax = a)
+            nx.draw_networkx_nodes(G, pos, list_nodes, label = labelSet, node_color = cmapUsed(com), ax = a)
         nx.draw_networkx_edges(G, pos, alpha=0.5, ax = a)
         if(labels):
             nx.draw_networkx_labels(G, pos , ax = a)
+    if(globalOptionsMet2 == "Degree"):
+        # Metrics computing
+        degrees = nx.degree_centrality(G)
+
+
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=degrees, name='degree')
+
+        # minmax
+        minDeg = min(degrees.values())
+        maxDeg = max(degrees.values())
+
+        colDeg = []
+
+        # Set the colors that could be used next
+        for node, data in G.nodes(data=True):
+            colDeg.append(normalize(data['degree'], maxDeg, minDeg))
+
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colDeg, ax = a)
+
+    if (globalOptionsMet2 == "Between Centrality"):
+        # Metrics computing
+        betweenCentralities = nx.betweenness_centrality(G)
+
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=betweenCentralities, name='betweenCentrality')
+
+        # minmax
+        minBetween = min(betweenCentralities.values())
+        maxBetween = max(betweenCentralities.values())
+
+        colBetween = []
+
+        # Set the colors that could be used next
+        for node, data in G.nodes(data=True):
+            colBetween.append(normalize(data['betweenCentrality'], maxBetween, minBetween))
+
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colBetween, ax = a)
+    if (globalOptionsMet2 == "Subgraph Centrality"):
+        # Metrics computing
+        subgraphCentralities = nx.subgraph_centrality(G)
+
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=subgraphCentralities, name='subgraphCentrality')
+
+        # minmax
+        minSub = min(subgraphCentralities.values())
+        maxSub = max(subgraphCentralities.values())
+
+        colSub = []
+
+        # Set the colors that could be used next
+        for node, data in G.nodes(data=True):
+            colSub.append(normalize(data['subgraphCentrality'], maxSub, minSub))
+
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colSub, ax = a)
+    if (globalOptionsMet2 == "Load Centrality"):
+        # Metrics computing
+        loadCentralities = nx.load_centrality(G)
+
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=loadCentralities, name='loadCentrality')
+
+        # minmax
+        minLoad = min(loadCentralities.values())
+        maxLoad = max(loadCentralities.values())
+
+        colLoad = []
+
+        # Set the colors that could be used next
+        for node, data in G.nodes(data=True):
+            colLoad.append(normalize(data['loadCentrality'], maxLoad, minLoad))
+
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colLoad, ax = a)
 
 
 ###########################################################################
@@ -346,11 +438,7 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
 
 
     pos = nx.kamada_kawai_layout(G)
-    nodeList = list(G.nodes)
-    degreeList = G.degree
     drawGraph(G, pos, a, labels)
-    xlim = a.get_xlim()
-    ylim = a.get_ylim()
     plt.axis('off')
     a.set_title(titleString, fontsize=fontSize, color=color)
     return f
@@ -566,7 +654,7 @@ optionData = ("Les miserables", "Airlines", "Karate")
 optionsCombo1 = ttk.Combobox(frame, values = optionData)
 optionsCombo1.current(0)
 
-optionMetrics2 = ("Default","Communities", "met3")
+optionMetrics2 = ("Default","Communities", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
 optionsCombo2 = ttk.Combobox(frame, values = optionMetrics2)
 optionsCombo2.current(0)
 
