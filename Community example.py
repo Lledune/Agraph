@@ -40,11 +40,18 @@ def normalize(val, max, min):
     val = ((val-min)/max)
     return val
 
+#m is default size
+def normalizeSize(val, max, min, m):
+    val = ((val-min)/max)*m
+    return val
+
 pos = nx.circular_layout(G)
 nodeColors = []
+nodeSizes = []
 
 for node, data in G.nodes(data = True):
     nodeColors.append(normalize(data['degreeTest'], maxdeg, mindeg))
+    nodeSizes.append((normalizeSize(data['degreeTest'], maxdeg, mindeg, 500)+1))
 
-nx.draw(G, vmax = 1, vmin = 0, cmap = plt.cm.viridis, with_labels=False, node_size = 25, node_color = nodeColors)
+nx.draw(G, vmax = 1, vmin = 0, cmap = plt.cm.viridis, with_labels=False, node_size = nodeSizes, node_color = nodeColors)
 plt.show()

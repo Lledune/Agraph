@@ -88,6 +88,12 @@ globalOptionsMet2 = ""
 global cmap1
 cmap1 = ""
 
+global maxSize
+maxSize = 100
+
+global globalOptionsMet3
+globalOptionsMet3 = "Default"
+
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
@@ -116,8 +122,15 @@ def normalize(val, max, min):
     val = ((val-min)/max)
     return val
 
+def normalizeSize(val, max, min, m):
+    val = ((val-min)/max)*m
+    return val
+
 #Refresh global variables (take widget values)
 def refreshGlobals():
+
+    global maxSize
+    maxSize = int(sizeEntry.get())
 
     global globalLayout
     globalLayout = radioVar.get()
@@ -130,6 +143,9 @@ def refreshGlobals():
 
     global globalOptionsMet2
     globalOptionsMet2 = optionsCombo2.get()
+
+    global globalOptionsMet3
+    globalOptionsMet3 = optionsCombo3.get()
     
     global globalColCom
     globalColCom = (optionsCombo5.get() == "Communautés colorées")
@@ -255,6 +271,59 @@ def nextRefresh():
 
 def drawGraph(G, pos, a, labels):
 
+    #Choosing size,  the size list will be defined here for the rest of the function
+    sizeM = maxSize
+    sizes = []
+    if(globalOptionsMet3 == "Default"):
+        for node, data in G.nodes(data=True):
+            sizes.append(sizeM)
+    if(globalOptionsMet3 == "Degree"):
+        degrees = nx.degree_centrality(G)
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=degrees, name='degree')
+        # minmax
+        minDeg = min(degrees.values())
+        maxDeg = max(degrees.values())
+        #loop trough nodes
+        for node, data in G.nodes(data=True):
+            sizes.append((normalizeSize(data['degree'], maxDeg, minDeg, sizeM) + 5))
+
+    if(globalOptionsMet3 == "Between Centrality"):
+        # Metrics computing
+        betweenCentralities = nx.betweenness_centrality(G)
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=betweenCentralities, name='betweenCentrality')
+        # minmax
+        minBetween = min(betweenCentralities.values())
+        maxBetween = max(betweenCentralities.values())
+        #loop trough nodes
+        for node, data in G.nodes(data=True):
+            sizes.append((normalizeSize(data['betweenCentrality'], maxBetween, minBetween, sizeM) + 5))
+
+    if(globalOptionsMet3 == "Load Centrality"):
+        # Metrics computing
+        loadCentralities = nx.load_centrality(G)
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=loadCentralities, name='loadCentrality')
+        # minmax
+        minLoad = min(loadCentralities.values())
+        maxLoad = max(loadCentralities.values())
+        #loop trough nodes
+        for node, data in G.nodes(data=True):
+            sizes.append((normalizeSize(data['loadCentrality'], maxLoad, minLoad, sizeM) + 5))
+
+    if(globalOptionsMet3 == "Subgraph Centrality"):
+        # Metrics computing
+        subgraphCentralities = nx.subgraph_centrality(G)
+        # Add metrics as params of the nodes
+        nx.set_node_attributes(G, values=subgraphCentralities, name='subgraphCentrality')
+        # minmax
+        minSub = min(subgraphCentralities.values())
+        maxSub = max(subgraphCentralities.values())
+        #loop trough nodes
+        for node, data in G.nodes(data=True):
+            sizes.append((normalizeSize(data['subgraphCentrality'], maxSub, minSub, sizeM) + 5))
+
     #Choosing cmap for colors
     cmapChosen = plt.cm.viridis
     if(cmap1 == "Viridis"):
@@ -263,7 +332,7 @@ def drawGraph(G, pos, a, labels):
         cmapChosen = plt.cm.magma
 
     if(globalOptionsMet2 == "Default"):
-            nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = cmapChosen)
+            nx.draw_networkx(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = cmapChosen, node_size = sizes)
     if(globalOptionsMet2 == "Communities"):
         cmapUsed = ""
         if(cmap1 == "Viridis"):
@@ -278,15 +347,13 @@ def drawGraph(G, pos, a, labels):
         for com in set(partition.values()) :
             count = count + 1.
             list_nodes = [nodes for nodes in partition.keys() if partition[nodes] == com]
-            nx.draw_networkx_nodes(G, pos, list_nodes, label = labelSet, node_color = cmapUsed(com), ax = a)
+            nx.draw_networkx_nodes(G, pos, list_nodes, label = labelSet, node_color = cmapUsed(com), ax = a, node_size=sizes)
         nx.draw_networkx_edges(G, pos, alpha=0.5, ax = a)
         if(labels):
             nx.draw_networkx_labels(G, pos , ax = a)
     if(globalOptionsMet2 == "Degree"):
         # Metrics computing
         degrees = nx.degree_centrality(G)
-
-
         # Add metrics as params of the nodes
         nx.set_node_attributes(G, values=degrees, name='degree')
 
@@ -300,7 +367,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colDeg.append(normalize(data['degree'], maxDeg, minDeg))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colDeg, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colDeg, ax = a)
 
     if (globalOptionsMet2 == "Between Centrality"):
         # Metrics computing
@@ -319,7 +386,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colBetween.append(normalize(data['betweenCentrality'], maxBetween, minBetween))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colBetween, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colBetween, ax = a)
     if (globalOptionsMet2 == "Subgraph Centrality"):
         # Metrics computing
         subgraphCentralities = nx.subgraph_centrality(G)
@@ -337,7 +404,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colSub.append(normalize(data['subgraphCentrality'], maxSub, minSub))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colSub, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colSub, ax = a)
     if (globalOptionsMet2 == "Load Centrality"):
         # Metrics computing
         loadCentralities = nx.load_centrality(G)
@@ -355,7 +422,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colLoad.append(normalize(data['loadCentrality'], maxLoad, minLoad))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=100, node_color=colLoad, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colLoad, ax = a)
 
 
 ###########################################################################
@@ -643,8 +710,7 @@ useLabelCheck = Checkbutton(frame, text = "Use labels", variable = useLabelCheck
 
 #text entries
 sizeEntry  = Entry(frame)
-sizeInput = IntVar(window)
-sizeInput.set(10)
+sizeEntry.insert(END, '100')
 filterEntry = Entry(frame)
 filterInput = DoubleVar(window)
 filterInput.set(5)
@@ -658,11 +724,11 @@ optionMetrics2 = ("Default","Communities", "Degree", "Between Centrality", "Subg
 optionsCombo2 = ttk.Combobox(frame, values = optionMetrics2)
 optionsCombo2.current(0)
 
-optionMetrics3 = ("met1", "met2", "met3")
+optionMetrics3 = ("Default", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
 optionsCombo3 = ttk.Combobox(frame, values = optionMetrics3)
 optionsCombo3.current(0)
 
-optionMetrics4 = ("met1", "met2", "met3")
+optionMetrics4 = ("met122", "met2", "met3")
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 
