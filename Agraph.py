@@ -367,7 +367,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colDeg.append(normalize(data['degree'], maxDeg, minDeg))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colDeg, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colDeg, ax = a)
 
     if (globalOptionsMet2 == "Between Centrality"):
         # Metrics computing
@@ -386,7 +386,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colBetween.append(normalize(data['betweenCentrality'], maxBetween, minBetween))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colBetween, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colBetween, ax = a)
     if (globalOptionsMet2 == "Subgraph Centrality"):
         # Metrics computing
         subgraphCentralities = nx.subgraph_centrality(G)
@@ -404,7 +404,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colSub.append(normalize(data['subgraphCentrality'], maxSub, minSub))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colSub, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a)
     if (globalOptionsMet2 == "Load Centrality"):
         # Metrics computing
         loadCentralities = nx.load_centrality(G)
@@ -422,7 +422,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colLoad.append(normalize(data['loadCentrality'], maxLoad, minLoad))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=False, node_size=sizes, node_color=colLoad, ax = a)
+        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colLoad, ax = a)
 
 
 ###########################################################################
