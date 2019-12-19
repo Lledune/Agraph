@@ -112,6 +112,9 @@ globalEdgeType = "solid"
 global globalEdgeOpacity
 globalEdgeOpacity = 0.8
 
+global globalLabelCol
+globalLabelCol = "Black"
+
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
@@ -151,6 +154,9 @@ def refreshGlobals():
 
     global globalEdgeCol
     globalEdgeCol = optionsEdgeCol.get()
+
+    global globalLabelCol
+    globalLabelCol = optionsLabelCol.get()
 
     global globalEdgeType
     globalEdgeType = optionsEdgeType.get()
@@ -427,7 +433,7 @@ def drawGraph(G, pos, a, labels):
         nx.draw_networkx_nodes(G, pos=pos, ax=a, node_color = range(len(G)), cmap = cmapChosen, node_size = sizes)
         nx.draw_networkx_edges(G, pos, edge_color = globalEdgeCol, style = globalEdgeType, alpha = globalEdgeOpacity, ax = a)
         if(labels):
-            nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a)
+            nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a, font_color = globalLabelCol)
     if(globalOptionsMet2 == "Communities"):
         cmapUsed = ""
         if(cmap1 == "Viridis"):
@@ -445,7 +451,7 @@ def drawGraph(G, pos, a, labels):
             nx.draw_networkx_nodes(G, pos, list_nodes, label = labelSet, node_color = cmapUsed(com), ax = a, node_size=sizes)
         nx.draw_networkx_edges(G, pos, ax = a, edge_color = globalEdgeCol, style = globalEdgeType, alpha = globalEdgeOpacity)
         if(labels):
-            nx.draw_networkx_labels(G, pos , ax = a, font_size = globalLabSize)
+            nx.draw_networkx_labels(G, pos , ax = a, font_size = globalLabSize, font_color = globalLabelCol)
     if(globalOptionsMet2 == "Degree"):
         # Metrics computing
         degrees = nx.degree_centrality(G)
@@ -462,8 +468,10 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colDeg.append(normalize(data['degree'], maxDeg, minDeg))
 
-        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colDeg, ax = a)
         nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
+        if(labels):
+            nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a, font_color = globalLabelCol)
 
     if (globalOptionsMet2 == "Between Centrality"):
         # Metrics computing
@@ -482,8 +490,10 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colBetween.append(normalize(data['betweenCentrality'], maxBetween, minBetween))
 
-        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colBetween, ax = a)
         nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
+        if(labels):
+            nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a, font_color = globalLabelCol)
 
     if (globalOptionsMet2 == "Subgraph Centrality"):
         # Metrics computing
@@ -502,8 +512,10 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colSub.append(normalize(data['subgraphCentrality'], maxSub, minSub))
 
-        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a)
         nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
+        if(labels):
+            nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a, font_color = globalLabelCol)
 
     if (globalOptionsMet2 == "Load Centrality"):
         # Metrics computing
@@ -522,8 +534,10 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colLoad.append(normalize(data['loadCentrality'], maxLoad, minLoad))
 
-        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colLoad, ax = a)
         nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
+        if(labels):
+            nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a, font_color = globalLabelCol)
 
 ###########################################################################
 #The 4 functions below return f, a Figure that is then drawn on the canvas.
@@ -747,7 +761,7 @@ fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 #Show main window
 window = Tk()
 window.title("A-graph")
-window.geometry("1185x780")
+window.geometry("1")
 window.minsize(1024, 720)
 window.resizable(width=False, height=False)
 
@@ -797,7 +811,7 @@ buttWidth = 7
 #labels
 colorLabel = Label(frame, text = "Color",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 sizeLabel = Label(frame, text = "Size",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-labelsLabel = Label(frame, text = "Label size", fg = fgCol, bg = bgCol, font = "Courrier, 20")
+labelsLabel = Label(frame, text = "Label size/color", fg = fgCol, bg = bgCol, font = "Courrier, 20")
 filterLabel = Label(frame, text = "Filter",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 layoutLabel = Label(frame, text = "Layout : ",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 edgeLabel = Label(frame, text = "Edges",fg = fgCol, bg =bgCol,font = "Courrier, 20")
@@ -817,7 +831,7 @@ sizeEntry.insert(END, '100')
 sizeLabelEntry = Entry(frame)
 sizeLabelEntry.insert(END, '5')
 filterEntry = Entry(frame)
-filterEntry.insert(END, '100')
+filterEntry.insert(END, '0.1')
 edgesOpacityEntry = Entry(frame)
 edgesOpacityEntry.insert(END, '0.8')
 #déroulantes
@@ -828,6 +842,10 @@ optionsCombo1.current(0)
 optionData2 = ("Black", "White", "Red", "Blue", "Green")
 optionsEdgeCol = ttk.Combobox(frame, values = optionData2)
 optionsEdgeCol.current(0)
+
+optionData3 = ("Black", "White", "Red", "Blue", "Green")
+optionsLabelCol = ttk.Combobox(frame, values = optionData3)
+optionsLabelCol.current(0)
 
 optionData3 = ("solid", "dashed", "dotted", "dashdot")
 optionsEdgeType = ttk.Combobox(frame, values = optionData3)
@@ -897,11 +915,12 @@ nextButton.grid(column = 17, row = 14, columnspan = 2, sticky = N + S + W + E)
 layoutLabel.grid(column = 0, row = 0, columnspan = 1, sticky = N + S + W + E)
 labelsLabel.grid(column = 0, row = 3, columnspan=1, sticky = N + S + W + E)
 sizeLabelEntry.grid(column = 0, row = 4, columnspan = 1, sticky = N + S + W + E)
-edgeLabel.grid(column = 0, row = 5, columnspan = 1, sticky = N + S + W + E)
-optionsEdgeCol.grid(column = 0, row = 6, columnspan = 1, sticky = N + S + W + E)
-optionsEdgeType.grid(column = 0, row = 7, columnspan = 1, sticky = N + S + W + E)
-edgeOpacityLabel.grid(column = 0, row = 8, columnspan = 1, sticky = N + S + W + E)
-edgesOpacityEntry.grid(column = 0, row = 9, columnspan = 1, sticky = N + S + W + E)
+optionsLabelCol.grid(column = 0, row = 5, columnspan = 1, sticky = N + S + W + E)
+edgeLabel.grid(column = 0, row = 6, columnspan = 1, sticky = N + S + W + E)
+optionsEdgeCol.grid(column = 0, row = 7, columnspan = 1, sticky = N + S + W + E)
+optionsEdgeType.grid(column = 0, row = 8, columnspan = 1, sticky = N + S + W + E)
+edgeOpacityLabel.grid(column = 0, row = 9, columnspan = 1, sticky = N + S + W + E)
+edgesOpacityEntry.grid(column = 0, row = 10, columnspan = 1, sticky = N + S + W + E)
 canvasWidget.grid(row=2, column=1, columnspan = 16, rowspan = 12,sticky = N + S + W + E)
 canvas.draw()
 #toolbar
