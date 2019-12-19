@@ -115,6 +115,9 @@ globalEdgeOpacity = 0.8
 global globalLabelCol
 globalLabelCol = "Black"
 
+global globalbgCol
+globalbgCol = fgCol
+
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
 a = f.add_subplot(111)
@@ -149,6 +152,11 @@ def normalizeSize(val, max, min, m):
 
 #Refresh global variables (take widget values)
 def refreshGlobals():
+    global globalbgCol
+    globalbgCol = optionsbgCol.get()
+    if(globalbgCol == "Default"):
+        globalbgCol = fgCol
+
     global globalLabSize
     globalLabSize = int(sizeLabelEntry.get())
 
@@ -546,7 +554,7 @@ def drawCircular(dataPath, titleString = "Title", color = "white", fontSize = 30
     global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
-    a.set_facecolor(fgCol)
+    a.set_facecolor(globalbgCol)
 
     #Data extension checking, supports gml and gexf
     fileName, fileExtension = os.path.splitext(dataPath)
@@ -589,7 +597,7 @@ def drawKamada(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
-    a.set_facecolor(fgCol)
+    a.set_facecolor(globalbgCol)
 
     #Data extension checking, supports gml and gexf
     fileName, fileExtension = os.path.splitext(dataPath)
@@ -628,7 +636,7 @@ def drawFruchterman(dataPath, titleString="Title", color="white", fontSize=30, l
     global f
     f = plt.Figure(figsize=(5, 4), facecolor=bgCol)
     a = f.add_subplot(111)
-    a.set_facecolor(fgCol)
+    a.set_facecolor(globalbgCol)
 
     #Data extension checking, supports gml and gexf
     fileName, fileExtension = os.path.splitext(dataPath)
@@ -670,7 +678,7 @@ def drawSpiral(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
-    a.set_facecolor(fgCol)
+    a.set_facecolor(globalbgCol)
 
     # Data extension checking, supports gml and gexf
     fileName, fileExtension = os.path.splitext(dataPath)
@@ -712,7 +720,7 @@ def drawPlanar(dataPath, titleString = "Title", color = "white", fontSize = 30, 
     global f
     f = plt.Figure(figsize=(5,4), facecolor=bgCol)
     a = f.add_subplot(111)
-    a.set_facecolor(fgCol)
+    a.set_facecolor(globalbgCol)
 
     # Data extension checking, supports gml and gexf
     fileName, fileExtension = os.path.splitext(dataPath)
@@ -761,7 +769,7 @@ fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 #Show main window
 window = Tk()
 window.title("A-graph")
-window.geometry("1")
+window.geometry("1600x950")
 window.minsize(1024, 720)
 window.resizable(width=False, height=False)
 
@@ -774,7 +782,7 @@ window.iconbitmap(os.path.join(dirname, 'agraph.ico'))
 #################
 
 #frame
-frame = Frame(window, bg = bgCol, bd = 1, relief = SUNKEN)
+frame = Frame(window, bg = bgCol, bd = 1)
 toolbarFrame = Frame(master = window)
 
 #Radiochoice (exclusive choice)
@@ -811,11 +819,12 @@ buttWidth = 7
 #labels
 colorLabel = Label(frame, text = "Color",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 sizeLabel = Label(frame, text = "Size",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-labelsLabel = Label(frame, text = "Label size/color", fg = fgCol, bg = bgCol, font = "Courrier, 20")
+labelsLabel = Label(frame, text = "Label color/size", fg = fgCol, bg = bgCol, font = "Courrier, 20")
 filterLabel = Label(frame, text = "Filter",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 layoutLabel = Label(frame, text = "Layout : ",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 edgeLabel = Label(frame, text = "Edges",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 edgeOpacityLabel = Label(frame, text = "Edges opacity",fg = fgCol, bg =bgCol,font = "Courrier, 20")
+bgColLabel = Label(frame, text = "Background",fg = fgCol, bg =bgCol,font = "Courrier, 20")
 
 #Checkbutton
 global useImportChecked
@@ -846,6 +855,10 @@ optionsEdgeCol.current(0)
 optionData3 = ("Black", "White", "Red", "Blue", "Green")
 optionsLabelCol = ttk.Combobox(frame, values = optionData3)
 optionsLabelCol.current(0)
+
+optionData4 = ("Default", "Black", "White", "Silver", "Darkslateblue", "Yellowgreen")
+optionsbgCol = ttk.Combobox(frame, values = optionData4)
+optionsbgCol.current(0)
 
 optionData3 = ("solid", "dashed", "dotted", "dashdot")
 optionsEdgeType = ttk.Combobox(frame, values = optionData3)
@@ -882,11 +895,11 @@ canvasWidget = canvas.get_tk_widget()
 #GridSpacing
 ##############
 for i in range(0,21):
-    frame.grid_columnconfigure(i, minsize = 49)
+    frame.grid_columnconfigure(i, minsize = 74)
 frame.grid_columnconfigure(13, minsize = 0)
 
 for i in range(0,15):
-    frame.grid_rowconfigure(i, minsize = 51)
+    frame.grid_rowconfigure(i, minsize = 63)
 
 #########################
 #Gridlayout  Configure
@@ -914,15 +927,19 @@ prevButton.grid(column = 15, row = 14, columnspan = 2, sticky = N + S + W + E)
 nextButton.grid(column = 17, row = 14, columnspan = 2, sticky = N + S + W + E)
 layoutLabel.grid(column = 0, row = 0, columnspan = 1, sticky = N + S + W + E)
 labelsLabel.grid(column = 0, row = 3, columnspan=1, sticky = N + S + W + E)
-sizeLabelEntry.grid(column = 0, row = 4, columnspan = 1, sticky = N + S + W + E)
-optionsLabelCol.grid(column = 0, row = 5, columnspan = 1, sticky = N + S + W + E)
+sizeLabelEntry.grid(column = 0, row = 5, columnspan = 1, sticky = N + S + W + E)
+optionsLabelCol.grid(column = 0, row = 4, columnspan = 1, sticky = N + S + W + E)
 edgeLabel.grid(column = 0, row = 6, columnspan = 1, sticky = N + S + W + E)
 optionsEdgeCol.grid(column = 0, row = 7, columnspan = 1, sticky = N + S + W + E)
 optionsEdgeType.grid(column = 0, row = 8, columnspan = 1, sticky = N + S + W + E)
 edgeOpacityLabel.grid(column = 0, row = 9, columnspan = 1, sticky = N + S + W + E)
 edgesOpacityEntry.grid(column = 0, row = 10, columnspan = 1, sticky = N + S + W + E)
-canvasWidget.grid(row=2, column=1, columnspan = 16, rowspan = 12,sticky = N + S + W + E)
+bgColLabel.grid(column = 0, row = 11, columnspan = 1, sticky = N + S + W + E)
+optionsbgCol.grid(column = 0, row = 12, columnspan = 1, sticky = N + S + W + E)
+canvasWidget.grid(row=2, column=1, columnspan = 16, rowspan = 12, sticky = N + S + W + E)
 canvas.draw()
+
+
 #toolbar
 toolbarFrame.grid(column = 0, row = 14, columnspan = 10)
 toolbar = NavigationToolbar2Tk(canvas, toolbarFrame)
