@@ -334,6 +334,7 @@ def drawGraph(G, pos, a, labels):
         G = G.subgraph(displayedNodes)
 
     if (globalOptionsMet4 == "Load Centrality"):
+        displayedNodes = []
         # Metrics computing
         loadCentralities = nx.load_centrality(G)
         # Add metrics as params of the nodes
@@ -347,6 +348,7 @@ def drawGraph(G, pos, a, labels):
         G = G.subgraph(displayedNodes)
 
     if (globalOptionsMet4 == "Subgraph Centrality"):
+        displayedNodes = []
         # Metrics computing
         subgraphCentralities = nx.subgraph_centrality(G)
         # Add metrics as params of the nodes
@@ -460,7 +462,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colDeg.append(normalize(data['degree'], maxDeg, minDeg))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colDeg, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
         nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
 
     if (globalOptionsMet2 == "Between Centrality"):
@@ -480,7 +482,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colBetween.append(normalize(data['betweenCentrality'], maxBetween, minBetween))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colBetween, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
         nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
 
     if (globalOptionsMet2 == "Subgraph Centrality"):
@@ -500,7 +502,7 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colSub.append(normalize(data['subgraphCentrality'], maxSub, minSub))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
         nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
 
     if (globalOptionsMet2 == "Load Centrality"):
@@ -520,8 +522,8 @@ def drawGraph(G, pos, a, labels):
         for node, data in G.nodes(data=True):
             colLoad.append(normalize(data['loadCentrality'], maxLoad, minLoad))
 
-        nx.draw_networkx(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colLoad, ax = a, font_size = globalLabSize, edge_color = globalEdgeCol, style = globalEdgeType)
-
+        nx.draw_networkx_nodes(G, pos = pos, vmax=1, vmin=0, cmap = cmapChosen, with_labels=labels, node_size=sizes, node_color=colSub, ax = a, font_size = globalLabSize)
+        nx.draw_networkx_edges(G, pos, edge_color=globalEdgeCol, style=globalEdgeType, alpha=globalEdgeOpacity, ax=a)
 
 ###########################################################################
 #The 4 functions below return f, a Figure that is then drawn on the canvas.
