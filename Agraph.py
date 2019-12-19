@@ -421,8 +421,11 @@ def drawGraph(G, pos, a, labels):
 
     #drawing
     if(globalOptionsMet2 == "Default"):
-            nx.draw_networkx_nodes(G, pos=pos, ax=a, with_labels=labels, node_color = range(len(G)), cmap = cmapChosen, node_size = sizes, font_size = globalLabSize)
-            nx.draw_networkx_edges(G, pos, edge_color = globalEdgeCol, style = globalEdgeType, alpha = globalEdgeOpacity, ax = a)
+        labelDic = nx.get_node_attributes(G, 'label')
+        nx.draw_networkx_nodes(G, pos=pos, ax=a, node_color = range(len(G)), cmap = cmapChosen, node_size = sizes)
+        nx.draw_networkx_edges(G, pos, edge_color = globalEdgeCol, style = globalEdgeType, alpha = globalEdgeOpacity, ax = a)
+        if(labels):
+            nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a)
     if(globalOptionsMet2 == "Communities"):
         cmapUsed = ""
         if(cmap1 == "Viridis"):
@@ -742,7 +745,7 @@ fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 #Show main window
 window = Tk()
 window.title("A-graph")
-window.geometry("1150x780")
+window.geometry("1185x780")
 window.minsize(1024, 720)
 window.resizable(width=False, height=False)
 
