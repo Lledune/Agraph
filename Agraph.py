@@ -40,6 +40,8 @@ fI = 0 #counter for keeping track of current graph
 global fCount
 fCount = 0
 
+global optionMetrics5
+
 #Global arguments
 global toolbar
 toolbar = None
@@ -117,6 +119,22 @@ globalLabelCol = "Black"
 
 global globalbgCol
 globalbgCol = fgCol
+
+global optionMetrics5
+
+def meth(event):
+    print(optionsCombo2.get())
+    if(optionsCombo2.get() == "Communities"):
+        print("if")
+        optionMetrics5 = ("Pale", "Bright")
+        optionsCombo5.config(values = optionMetrics5)
+        optionsCombo5.current(0)
+    else:
+        print("else")
+        optionMetrics5 = ("Viridis", "Magma", "Plasma", "Blues", "Purples", "Reds", "Greens", "YlOrRd")
+        optionsCombo5.config(values = optionMetrics5)
+        optionsCombo5.current(0)
+
 
 # Testing networkx and importing test file
 f = plt.Figure(figsize = (5,4), facecolor = bgCol)
@@ -456,9 +474,9 @@ def drawGraph(G, pos, a, labels):
             nx.draw_networkx_labels(G, pos, font_size=globalLabSize, ax = a, font_color = globalLabelCol)
     if(globalOptionsMet2 == "Communities"):
         cmapUsed = ""
-        if(cmap1 == "Viridis"):
+        if(cmap1 == "Pale"):
             cmapUsed = ListedColormap(palettable.colorbrewer.qualitative.Set3_12.mpl_colors, N = len(G))
-        if(cmap1 == "Magma"):
+        if(cmap1 == "Bright"):
             cmapUsed = ListedColormap(palettable.colorbrewer.qualitative.Set1_9.mpl_colors, N = len(G))
 
         partition = community.best_partition(G)
@@ -879,6 +897,8 @@ optionsEdgeType.current(0)
 optionMetrics2 = ("Default","Communities", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
 optionsCombo2 = ttk.Combobox(frame, values = optionMetrics2)
 optionsCombo2.current(0)
+optionsCombo2.bind("<<ComboboxSelected>>", meth)
+
 
 optionMetrics3 = ("Default", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
 optionsCombo3 = ttk.Combobox(frame, values = optionMetrics3)
