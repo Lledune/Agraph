@@ -434,6 +434,18 @@ def drawGraph(G, pos, a, labels):
         cmapChosen = plt.cm.viridis
     if(cmap1 == "Magma"):
         cmapChosen = plt.cm.magma
+    if(cmap1 == "Plasma"):
+        cmapChosen = plt.cm.plasma
+    if(cmap1 == "Blues"):
+        cmapChosen = plt.cm.Blues
+    if(cmap1 == "Purples"):
+        cmapChosen = plt.cm.Purples
+    if(cmap1 == "Reds"):
+        cmapChosen = plt.cm.Reds
+    if(cmap1 == "Greens"):
+        cmapChosen = plt.cm.Greens
+    if(cmap1 == "YlOrRd"):
+        cmapChosen = plt.cm.YlOrRd
 
     #drawing
     if(globalOptionsMet2 == "Default"):
@@ -770,8 +782,7 @@ fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 window = Tk()
 window.title("A-graph")
 window.geometry("1600x950")
-window.minsize(1024, 720)
-window.resizable(width=False, height=False)
+#window.resizable(width=False, height=False)
 
 #background color
 window.config(background = bgCol)
@@ -782,7 +793,8 @@ window.iconbitmap(os.path.join(dirname, 'agraph.ico'))
 #################
 
 #frame
-frame = Frame(window, bg = bgCol, bd = 1)
+frame = Frame(window, bg = bgCol)
+#frame.columnconfigure(0, weight=1)
 toolbarFrame = Frame(master = window)
 
 #Radiochoice (exclusive choice)
@@ -876,7 +888,7 @@ optionMetrics4 = ("Default", "Degree", "Between Centrality", "Subgraph Centralit
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 
-optionMetrics5 = ("Viridis", "Magma")
+optionMetrics5 = ("Viridis", "Magma", "Plasma", "Blues", "Purples", "Reds", "Greens", "YlOrRd")
 optionsCombo5 = ttk.Combobox(frame, values = optionMetrics5)
 optionsCombo5.current(0)
 
@@ -901,10 +913,17 @@ frame.grid_columnconfigure(13, minsize = 0)
 for i in range(0,15):
     frame.grid_rowconfigure(i, minsize = 63)
 
+# for i in range(0,21):
+#     frame.columnconfigure(i, weight = 1)
+#
+# for i in range(0,15):
+#     frame.rowconfigure(i, weight = 1)
+
 #########################
 #Gridlayout  Configure
 #########################
 frame.grid(column = 0, row = 0, columnspan = 21, rowspan = 15, sticky = N + S + W + E)
+#frame.pack(fill = "both", expand = True)
 kamada.grid(column = 1, row = 0, columnspan = 3, sticky = N + S + W + E)
 circular.grid(column = 4, row = 0, columnspan = 3, sticky = N + S + W + E)
 spectral.grid(column = 7, row = 0, columnspan = 3, sticky = N + S + W + E)
