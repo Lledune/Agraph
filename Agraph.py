@@ -782,7 +782,7 @@ fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 window = Tk()
 window.title("A-graph")
 window.geometry("1600x950")
-#window.resizable(width=False, height=False)
+window.resizable(width=False, height=False)
 
 #background color
 window.config(background = bgCol)
