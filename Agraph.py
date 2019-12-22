@@ -21,7 +21,7 @@ dataOne = os.path.join(dirname, 'data/lesmiserables.gexf')
 dataTwo = os.path.join(dirname, 'data/airlines-sample.gexf')
 dataThree = os.path.join(dirname, 'data/karate.gml')
 dirDic = {
-    "Les miserables" : dataOne,
+    "Les Misérables" : dataOne,
     "Airlines" : dataTwo,
     "Karate" : dataThree
 }
@@ -29,6 +29,8 @@ dirDic = {
 #Color settings
 bgCol = "#0088AA"
 fgCol = "#B7C8C4"
+butCol = "#006680"
+butTxt = "#ffffff"
 
 #Global variables
 global fArray
@@ -52,7 +54,7 @@ global globalData
 globalData = "path"
 
 global globalImport
-globalImport = dirDic["Les miserables"]
+globalImport = dirDic["Les Misérables"]
 
 global globalColMet
 globalColMet = 0 #metrics to be defined, but same principle as globalLayout
@@ -264,13 +266,13 @@ def refreshPlot():
 
     #Drawing
     if (arg == "0"):
-        f = drawKamada(globalImport, "Kamada-kawai", "white", 30, checkedLabel)
+        f = drawKamada(globalImport, "Kamada-Kawai", "white", 30, checkedLabel)
     if (arg == "1"):
         f = drawCircular(globalImport, "Circular", "white", 30, checkedLabel)
     if (arg == "2"):
         f = drawSpiral(globalImport, "Spiral", "white", 30, checkedLabel)
     if (arg == "3"):
-        f = drawFruchterman(globalImport, "Fruchterman-reingold", "white", 30, checkedLabel)
+        f = drawFruchterman(globalImport, "Fruchterman-Reingold", "white", 30, checkedLabel)
     if (arg == "4"):
         f = drawPlanar(globalImport, "Planar", "white", 30, checkedLabel)
     #storing graph
@@ -798,7 +800,7 @@ fCirc = drawCircular(dataOne, "Circular", "white", 30, False)
 
 #Show main window
 window = Tk()
-window.title("A-graph")
+window.title("AGraph")
 window.geometry("1600x950")
 window.resizable(width=False, height=False)
 
@@ -820,11 +822,11 @@ radioVals = ["0","1","2","3","4"]
 radioText = ["Kamada", "Circular", "Spiral", "Fruchterman", "Planar"]
 radioVar = StringVar(window)
 radioVar.set(radioVals[0])
-kamada = Radiobutton(frame, variable = radioVar, text = radioText[0], value = radioVals[0], bg = bgCol, fg = fgCol, font = "Courrier")
-circular = Radiobutton(frame, variable = radioVar, text = radioText[1], value = radioVals[1], bg = bgCol, font = "Courrier",fg = fgCol)
-spectral = Radiobutton(frame, variable = radioVar, text = radioText[2], value = radioVals[2], bg = bgCol, font = "Courrier",fg = fgCol)
-fruchterman = Radiobutton(frame, variable = radioVar, text = radioText[3], value = radioVals[3], bg = bgCol, font = "Courrier",fg = fgCol)
-planar = Radiobutton(frame, variable = radioVar, text = radioText[4], value = radioVals[4], bg = bgCol, font = "Courrier",fg = fgCol)
+kamada = Radiobutton(frame, variable = radioVar, text = radioText[0], value = radioVals[0], bg = butTxt, fg = butCol, font = "Helvetica")
+circular = Radiobutton(frame, variable = radioVar, text = radioText[1], value = radioVals[1], bg = butTxt, fg = butCol, font = "Helvetica")
+spectral = Radiobutton(frame, variable = radioVar, text = radioText[2], value = radioVals[2], bg = butTxt, fg = butCol, font = "Helvetica")
+fruchterman = Radiobutton(frame, variable = radioVar, text = radioText[3], value = radioVals[3], bg = butTxt, fg = butCol, font = "Helvetica")
+planar = Radiobutton(frame, variable = radioVar, text = radioText[4], value = radioVals[4], bg = butTxt, fg = butCol, font = "Helvetica")
 buttonHeight= 5
 buttonWidth = 11
 #kamada.configure(width = buttonWidth, height = buttonHeight)
@@ -834,11 +836,11 @@ buttonWidth = 11
 
 
 #Buttons
-refreshButt = Button(frame, text = "Refresh",bg = fgCol, fg =bgCol,font = "Courrier, 20", command=refreshPlot)
-loadButt = Button(frame, text = "Import",bg = fgCol, fg =bgCol,font = "Courrier, 20", command = openFile)
-exitButton = Button(frame, text = "Exit", bg = fgCol, fg = bgCol, font = "Courrier, 20")
-nextButton = Button(frame, text = "Next", bg = fgCol, fg = bgCol, font = "Courrier, 20", command = nextRefresh)
-prevButton = Button(frame, text = "Previous", bg = fgCol, fg = bgCol, font = "Courrier, 20", command = prevRefresh)
+refreshButt = Button(frame, text = "Refresh", bg = butCol, fg = butTxt,font = "Helvetica, 20", command=refreshPlot)
+loadButt = Button(frame, text = "Import", bg = butCol, fg = butTxt, font = "Helvetica, 20", command = openFile)
+exitButton = Button(frame, text = "Exit", bg = butCol, fg = butTxt, font = "Helvetica, 20")
+nextButton = Button(frame, text = "Next", bg = butCol, fg = butTxt, font = "Helvetica, 20", command = nextRefresh)
+prevButton = Button(frame, text = "Previous", bg = butCol, fg = butTxt, font = "Helvetica, 20", command = prevRefresh)
 buttHeight = 1
 buttWidth = 7
 #refreshButt.configure(width = buttWidth, height = buttHeight)
@@ -847,22 +849,22 @@ buttWidth = 7
 
 
 #labels
-colorLabel = Label(frame, text = "Color",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-sizeLabel = Label(frame, text = "Size",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-labelsLabel = Label(frame, text = "Label color/size", fg = fgCol, bg = bgCol, font = "Courrier, 20")
-filterLabel = Label(frame, text = "Filter",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-layoutLabel = Label(frame, text = "Layout : ",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-edgeLabel = Label(frame, text = "Edges",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-edgeOpacityLabel = Label(frame, text = "Edges opacity",fg = fgCol, bg =bgCol,font = "Courrier, 20")
-bgColLabel = Label(frame, text = "Background",fg = fgCol, bg =bgCol,font = "Courrier, 20")
+colorLabel = Label(frame, text = "Color",fg = butTxt, bg = butCol,font = "Helvetica, 20")
+sizeLabel = Label(frame, text = "Size",fg = butTxt, bg =butCol,font = "Helvetica, 20")
+labelsLabel = Label(frame, text = "Label color/size", fg = butTxt, bg = butCol, font = "Helvetica, 20")
+filterLabel = Label(frame, text = "Filter",fg = butTxt, bg =butCol,font = "Helvetica, 20")
+layoutLabel = Label(frame, text = "Layout : ",fg = butTxt, bg =butCol,font = "Helvetica, 20")
+edgeLabel = Label(frame, text = "Edges",fg = butTxt, bg = butCol,font = "Helvetica, 20")
+edgeOpacityLabel = Label(frame, text = "Edges opacity",fg = butTxt, bg =butCol,font = "Helvetica, 20")
+bgColLabel = Label(frame, text = "Background",fg = butTxt, bg =butCol,font = "Helvetica, 20")
 
 #Checkbutton
 global useImportChecked
 useImportChecked = BooleanVar(window)
-useImportCheck = Checkbutton(frame, text = "Use import ", variable = useImportChecked, background = bgCol, fg = fgCol, activebackground = bgCol, onvalue = True)
+useImportCheck = Checkbutton(frame, text = "Use import ", variable = useImportChecked, bg = butTxt, fg = butCol, activebackground = bgCol, onvalue = True)
 global useLabelChecked
 useLabelChecked = BooleanVar(window)
-useLabelCheck = Checkbutton(frame, text = "Use labels", variable = useLabelChecked, background = bgCol, fg = fgCol, activebackground = bgCol, onvalue = True)
+useLabelCheck = Checkbutton(frame, text = "Use labels", variable = useLabelChecked, bg = butTxt, fg = butCol, activebackground = bgCol, onvalue = True)
 
 #text entries
 sizeEntry  = Entry(frame)
@@ -874,19 +876,19 @@ filterEntry.insert(END, '0.1')
 edgesOpacityEntry = Entry(frame)
 edgesOpacityEntry.insert(END, '0.8')
 #déroulantes
-optionData = ("Les miserables", "Airlines", "Karate")
+optionData = ("Les Misérables", "Airlines", "Karate")
 optionsCombo1 = ttk.Combobox(frame, values = optionData)
 optionsCombo1.current(0)
 
-optionData2 = ("Black", "White", "Red", "Blue", "Green")
+optionData2 = ("Black", "White", "Firebrick", "Teal", "Darkslategrey")
 optionsEdgeCol = ttk.Combobox(frame, values = optionData2)
 optionsEdgeCol.current(0)
 
-optionData3 = ("Black", "White", "Red", "Blue", "Green")
+optionData3 = ("Black", "White", "Firebrick", "Teal", "Darkslategrey")
 optionsLabelCol = ttk.Combobox(frame, values = optionData3)
 optionsLabelCol.current(0)
 
-optionData4 = ("Default", "Black", "White", "Silver", "Darkslateblue", "Yellowgreen")
+optionData4 = ("Default", "Darkslategrey", "White", "Lightpink", "Lightcyan", "Lightgrey")
 optionsbgCol = ttk.Combobox(frame, values = optionData4)
 optionsbgCol.current(0)
 
@@ -894,17 +896,17 @@ optionData3 = ("solid", "dashed", "dotted", "dashdot")
 optionsEdgeType = ttk.Combobox(frame, values = optionData3)
 optionsEdgeType.current(0)
 
-optionMetrics2 = ("Default","Communities", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
+optionMetrics2 = ("Default","Communities", "Degree", "Between Centrality", "Subgraph Centrality")
 optionsCombo2 = ttk.Combobox(frame, values = optionMetrics2)
 optionsCombo2.current(0)
 optionsCombo2.bind("<<ComboboxSelected>>", meth)
 
 
-optionMetrics3 = ("Default", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
+optionMetrics3 = ("Default", "Degree", "Between Centrality", "Subgraph Centrality")
 optionsCombo3 = ttk.Combobox(frame, values = optionMetrics3)
 optionsCombo3.current(0)
 
-optionMetrics4 = ("Default", "Degree", "Between Centrality", "Subgraph Centrality", "Load Centrality")
+optionMetrics4 = ("Default", "Degree", "Between Centrality", "Subgraph Centrality")
 optionsCombo4 = ttk.Combobox(frame, values = optionMetrics4)
 optionsCombo4.current(0)
 
