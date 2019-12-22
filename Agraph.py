@@ -822,11 +822,11 @@ radioVals = ["0","1","2","3","4"]
 radioText = ["Kamada", "Circular", "Spiral", "Fruchterman", "Planar"]
 radioVar = StringVar(window)
 radioVar.set(radioVals[0])
-kamada = Radiobutton(frame, variable = radioVar, text = radioText[0], value = radioVals[0], bg = butTxt, fg = butCol, font = "Helvetica")
-circular = Radiobutton(frame, variable = radioVar, text = radioText[1], value = radioVals[1], bg = butTxt, fg = butCol, font = "Helvetica")
-spectral = Radiobutton(frame, variable = radioVar, text = radioText[2], value = radioVals[2], bg = butTxt, fg = butCol, font = "Helvetica")
-fruchterman = Radiobutton(frame, variable = radioVar, text = radioText[3], value = radioVals[3], bg = butTxt, fg = butCol, font = "Helvetica")
-planar = Radiobutton(frame, variable = radioVar, text = radioText[4], value = radioVals[4], bg = butTxt, fg = butCol, font = "Helvetica")
+kamada = Radiobutton(frame, variable = radioVar, text = radioText[0], value = radioVals[0], bg = fgCol, fg = butCol, font = "Helvetica")
+circular = Radiobutton(frame, variable = radioVar, text = radioText[1], value = radioVals[1], bg = fgCol, fg = butCol, font = "Helvetica")
+spectral = Radiobutton(frame, variable = radioVar, text = radioText[2], value = radioVals[2], bg = fgCol, fg = butCol, font = "Helvetica")
+fruchterman = Radiobutton(frame, variable = radioVar, text = radioText[3], value = radioVals[3], bg = fgCol, fg = butCol, font = "Helvetica")
+planar = Radiobutton(frame, variable = radioVar, text = radioText[4], value = radioVals[4], bg = fgCol, fg = butCol, font = "Helvetica")
 buttonHeight= 5
 buttonWidth = 11
 #kamada.configure(width = buttonWidth, height = buttonHeight)
@@ -849,14 +849,14 @@ buttWidth = 7
 
 
 #labels
-colorLabel = Label(frame, text = "Color",fg = butTxt, bg = butCol,font = "Helvetica, 20")
-sizeLabel = Label(frame, text = "Size",fg = butTxt, bg =butCol,font = "Helvetica, 20")
-labelsLabel = Label(frame, text = "Label color/size", fg = butTxt, bg = butCol, font = "Helvetica, 20")
-filterLabel = Label(frame, text = "Filter",fg = butTxt, bg =butCol,font = "Helvetica, 20")
-layoutLabel = Label(frame, text = "Layout : ",fg = butTxt, bg =butCol,font = "Helvetica, 20")
-edgeLabel = Label(frame, text = "Edges",fg = butTxt, bg = butCol,font = "Helvetica, 20")
-edgeOpacityLabel = Label(frame, text = "Edges opacity",fg = butTxt, bg =butCol,font = "Helvetica, 20")
-bgColLabel = Label(frame, text = "Background",fg = butTxt, bg =butCol,font = "Helvetica, 20")
+colorLabel = Label(frame, text = "Color",fg = butTxt, bg = bgCol,font = "Helvetica, 20")
+sizeLabel = Label(frame, text = "Size",fg = butTxt, bg =bgCol,font = "Helvetica, 20")
+labelsLabel = Label(frame, text = "Label color/size", fg = butTxt, bg = bgCol, font = "Helvetica, 20")
+filterLabel = Label(frame, text = "Filter",fg = butTxt, bg =bgCol,font = "Helvetica, 20")
+layoutLabel = Label(frame, text = "Layout : ",fg = butTxt, bg =bgCol,font = "Helvetica, 20")
+edgeLabel = Label(frame, text = "Edges",fg = butTxt, bg = bgCol,font = "Helvetica, 20")
+edgeOpacityLabel = Label(frame, text = "Edges opacity",fg = butTxt, bg =bgCol,font = "Helvetica, 20")
+bgColLabel = Label(frame, text = "Background",fg = butTxt, bg =bgCol,font = "Helvetica, 20")
 
 #Checkbutton
 global useImportChecked
